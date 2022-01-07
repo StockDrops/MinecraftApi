@@ -19,10 +19,11 @@ namespace MinecraftApi.Core.Rcon.Services
         /// </summary>
         /// <param name="host"></param>
         /// <param name="port"></param>
-        public RconClientServiceOptions(string host, int port)
+        public RconClientServiceOptions(string host, int port, string password)
         {
             Host = host;
             Port = port;
+            Password = password;
         }
         /// <summary>
         /// Host to use with the connection
@@ -32,11 +33,15 @@ namespace MinecraftApi.Core.Rcon.Services
         /// Port to use with the connection.
         /// </summary>
         public int Port { get; }
+        /// <summary>
+        /// Password used in the RCON connection.
+        /// </summary>
+        public string Password { get; }
     }
     /// <summary>
     /// Class to send RCON messages
     /// </summary>
-    public class RconClientService
+    public class RconClientService : IDisposable
     {
         private TcpClient tcpClient;
         private RconClientServiceOptions options;
@@ -45,10 +50,15 @@ namespace MinecraftApi.Core.Rcon.Services
         /// </summary>
         /// <param name="host">Host used for the connection</param>
         /// <param name="port">Port used.</param>
-        public RconClientService(string host, int port)
+        /// <param name="password">Password usedd in the connection.</param>
+        public RconClientService(string host, int port, string password)
         {
+            if (string.IsNullOrEmpty(host))
+            {
+                throw new ArgumentNullException("host");
+            }
             tcpClient = new TcpClient();
-            options = new RconClientServiceOptions(host, port);
+            options = new RconClientServiceOptions(host, port, password);
         }
         /// <summary>
         /// Constructor to make the RconClientService compatible with dependency injection.
@@ -60,10 +70,11 @@ namespace MinecraftApi.Core.Rcon.Services
         {
             var host = options?.Value?.Host;
             var port = options?.Value?.Port;
+            var password = options?.Value?.Password ?? string.Empty; //we allow for empty passwords since it's possible to have unsecure RCON connections.
             if (!string.IsNullOrWhiteSpace(host) && port != null)
             {
                 tcpClient = new TcpClient();
-                this.options = new RconClientServiceOptions(host, port.Value);
+                this.options = new RconClientServiceOptions(host, port.Value, password);
             }
             else
             {
@@ -97,6 +108,11 @@ namespace MinecraftApi.Core.Rcon.Services
                 }
                 throw new Exception("No Bytes Read");
             }
+        }
+        ///<inheritdoc/>
+        public void Dispose()
+        {
+            tcpClient?.Dispose();
         }
     }
 }

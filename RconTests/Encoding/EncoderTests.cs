@@ -3,7 +3,7 @@ using MinecraftApi.Core.Rcon.Models;
 using MinecraftApi.Core.Rcon.Services;
 using System.Text;
 
-namespace RconTests
+namespace RconUnitTests
 {
     [TestClass]
     public class EncoderTests
