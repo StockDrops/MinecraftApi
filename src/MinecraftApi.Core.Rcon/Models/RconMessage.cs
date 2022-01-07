@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MinecraftApi.Core.Rcon.Contracts.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,11 +7,18 @@ using System.Threading.Tasks;
 
 namespace MinecraftApi.Core.Rcon.Models
 {
-    public class RconMessage
+    /// <summary>
+    /// Class defining a message used in the RCON protocol
+    /// </summary>
+    public class RconMessage : IRconMessage
     {
+        ///<inheritdoc/>
         public int RequestId { get; set; }
-        public string? Body { get; set; }
+        ///<inheritdoc/>
+        public byte[]? Body { get; set; }
+        ///<inheritdoc/>
         public RconMessageType Type { get; set; }
-        public int Length { get; }
+        ///<inheritdoc/>
+        public int Length => Body?.Length ?? throw new InvalidOperationException("Cannot read length before setting the body of the message!");
     }
 }
