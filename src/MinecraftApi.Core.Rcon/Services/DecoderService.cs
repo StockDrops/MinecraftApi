@@ -25,10 +25,10 @@ namespace MinecraftApi.Core.Rcon.Services
             int id = BitConverter.ToInt32(bytes, 4);
             int type = BitConverter.ToInt32(bytes, 8);
 
-            int bodyLen = bytes.Length - (HeaderLength + 4);
+            int bodyLen = bytes.Length - (HeaderLength + 4); //2 from length 2 from terminator
             return new RconMessage
             {
-                Body = bodyLen > 0 ? bytes.Skip(HeaderLength + 4).ToArray() : null, //TODO: probably use a faster method to get the body?
+                Body = bodyLen > 0 ? bytes.Skip(HeaderLength + 2).Take(bodyLen).ToArray() : null, //TODO: probably use a faster method to get the body?
                 RequestId = id,
                 Type = (RconMessageType)type
             };
