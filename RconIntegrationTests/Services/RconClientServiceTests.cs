@@ -1,5 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Minecraft.Rcon.Models;
+using MinecraftApi.Core.Rcon.Contracts.Models;
 using MinecraftApi.Core.Rcon.Models;
 using MinecraftApi.Rcon.Services;
 using System;
@@ -45,12 +47,42 @@ namespace RconIntegrationTests
                 RequestId = 1,
                 Type = RconMessageType.Command
             };
-            await rconClient.InitializeAsync(tokenSource.Token);
-            await rconClient.AuthenticateAsync(tokenSource.Token);
-            var result = await rconClient.SendMessageAsync(message, tokenSource.Token);
+            var result = await SendRawMessage(message, tokenSource.Token);
             Assert.IsTrue(result.RequestId == 1);
             Assert.IsTrue(result.Type == RconMessageType.Response);
-        }        
+        }
+        /// <summary>
+        /// Tests sending a text message.
+        /// </summary>
+        /// <returns></returns>
+        [TestMethod]
+        public async Task TestSendingTextMessage()
+        {
+            var tokenSource = new CancellationTokenSource();
+            tokenSource.CancelAfter(10000); //a 10s timeout
+            var command = "gm c lordhenry85";
+            var textMessage = new RconTextMessage(command, 1, RconMessageType.Command);
+            var result = await SendRawMessage(textMessage, tokenSource.Token);
+            Assert.IsTrue(result.RequestId == 1);
+            Assert.IsTrue(result.Type == RconMessageType.Response);
+        }
+        [TestMethod]
+        public async Task TestSendingCommandMessage()
+        {
+            var tokenSource = new CancellationTokenSource();
+            tokenSource.CancelAfter(10000);
+            var command = new RconCommand("kill Chinss", 1);
+            var result = await SendRawMessage(command, tokenSource.Token);
+            Assert.IsTrue(result.RequestId == 1);
+            Assert.IsTrue(result.Type == RconMessageType.Response);
+        }
+        private async Task<IRconMessage> SendRawMessage(IRconMessage message, CancellationToken token)
+        {
+            await rconClient.InitializeAsync(token);
+            await rconClient.AuthenticateAsync(token);
+            return await rconClient.SendMessageAsync(message, token);
+        }
+        
         /// <summary>
         /// Tests the connection to RCON, i.e. just the initialization of the TCP connection
         /// </summary>
