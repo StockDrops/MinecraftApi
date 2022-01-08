@@ -44,7 +44,21 @@ namespace MinecraftApi.Core.Rcon.Services
     public class RconClientService : IDisposable
     {
         private TcpClient tcpClient;
+        private NetworkStream? networkStream;
+
         private RconClientServiceOptions options;
+        
+        /// <summary>
+        /// Allows you to set the Password after initialization IF you set something wrong.
+        /// </summary>
+        public string Password
+        {
+            set 
+            {
+                options = new RconClientServiceOptions(options.Host, options.Port, value);
+            }
+        }
+
         /// <summary>
         /// Default constructor. Provide the connection information to be able to create the TcpClient
         /// </summary>
@@ -84,11 +98,30 @@ namespace MinecraftApi.Core.Rcon.Services
         /// <summary>
         /// Initializes the TCP connection. You MUST call this function before anything else. Or you will get an exception.
         /// </summary>
+        /// <param name="token"></param>
         /// <returns></returns>
-        public Task InitializeAsync()
+        public async Task InitializeAsync(CancellationToken token)
         {
-            return tcpClient.ConnectAsync(options.Host, options.Port);
+            await tcpClient.ConnectAsync(options.Host, options.Port, token);
         }
+        /// <summary>
+        /// Authenticates the RCON connection.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public async Task<bool> AuthenticateAsync(CancellationToken token)
+        {
+            var result = await SendMessageAsync(new Models.RconMessage
+            {
+                Body = Encoding.ASCII.GetBytes(options.Password),
+                RequestId = 0,
+                Type = Models.RconMessageType.Authenticate
+            }, token);
+            if (result.RequestId == -1)
+                return false;
+            return true;
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -97,21 +130,21 @@ namespace MinecraftApi.Core.Rcon.Services
         /// <returns></returns>
         public async Task<IRconMessage> SendMessageAsync(IRconMessage message, CancellationToken cancellationToken)
         {
-            using (var networkStream = tcpClient.GetStream())
+            //We do not use a using here since we want to be able to reuse the TCP Client for as long as we need it. The class is IDisposable for safe disposing.
+            networkStream = tcpClient.GetStream();
+            Memory<byte> memory = new Memory<byte>(new byte[1024]);
+            await networkStream.WriteAsync(message.RawMessage, cancellationToken);
+            var bytesRead = await networkStream.ReadAsync(memory, cancellationToken);
+            if(bytesRead > 0)
             {
-                Memory<byte> memory = new Memory<byte>(new byte[1024]);
-                await networkStream.WriteAsync(message.Body, cancellationToken);
-                var bytesRead = await networkStream.ReadAsync(memory, cancellationToken);
-                if(bytesRead > 0)
-                {
-                    return DecoderService.Decode(memory.ToArray());
-                }
-                throw new Exception("No Bytes Read");
+                return DecoderService.Decode(memory.ToArray());
             }
+            throw new Exception("No Bytes Read");
         }
         ///<inheritdoc/>
         public void Dispose()
         {
+            networkStream?.Dispose();
             tcpClient?.Dispose();
         }
     }
