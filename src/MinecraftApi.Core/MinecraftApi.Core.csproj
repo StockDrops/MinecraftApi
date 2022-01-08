@@ -7,6 +7,14 @@
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <WarningsAsErrors>$(WarningsAsErrors);NU1605;CS1591</WarningsAsErrors>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <WarningsAsErrors>$(WarningsAsErrors);NU1605;CS1591</WarningsAsErrors>
+  </PropertyGroup>
+
   <ItemGroup>
     <Folder Include="Contracts\Models\" />
     <Folder Include="Services\" />
@@ -18,6 +26,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\MinecraftApi.Core.Shared\MinecraftApi.Core.Shared.csproj" />
+    <ProjectReference Include="..\MinecraftApi.Core.Rcon\MinecraftApi.Core.Rcon.csproj" />
   </ItemGroup>
 
 </Project>

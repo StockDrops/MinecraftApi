@@ -16,6 +16,7 @@ namespace MinecraftApi.Core.Rcon.Models
         /// </summary>
         /// <param name="host"></param>
         /// <param name="port"></param>
+        /// <param name="password">Password used for securing the connection.</param>
         public RconClientServiceOptions(string host, int port, string password)
         {
             Host = host;
