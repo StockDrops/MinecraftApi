@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Minecraft.Rcon.Models
+namespace MinecraftApi.Rcon.Models
 {
     /// <summary>
     /// Implements the IRconCommand to create commands through Rcon.

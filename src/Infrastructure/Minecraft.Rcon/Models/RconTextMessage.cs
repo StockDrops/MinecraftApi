@@ -1,12 +1,13 @@
 ﻿using MinecraftApi.Core.Rcon.Contracts.Models;
 using MinecraftApi.Core.Rcon.Models;
+using MinecraftApi.Rcon.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Minecraft.Rcon.Models
+namespace MinecraftApi.Rcon.Models
 {
     ///<inheritdoc/>
     public class RconTextMessage : RconMessage, IRconTextMessage

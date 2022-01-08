@@ -24,7 +24,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RconUnitTests", "src\Tests\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RconIntegrationTests", "src\Tests\RconIntegrationTests\RconIntegrationTests.csproj", "{3E67505C-0EC8-417E-911C-50116D9130B5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Minecraft.Rcon", "src\Infrastructure\Minecraft.Rcon\Minecraft.Rcon.csproj", "{F24C7236-E4DF-4B28-87D9-88907FA8CCC8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MinecraftApi.Rcon", "src\Infrastructure\Minecraft.Rcon\MinecraftApi.Rcon.csproj", "{F24C7236-E4DF-4B28-87D9-88907FA8CCC8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MinecraftApi.Ef.Sql", "src\Infrastructure\MinecraftApi.Ef.Sql\MinecraftApi.Ef.Sql.csproj", "{BF5BA389-ACFE-4002-80F5-2353D5108809}"
 EndProject
@@ -37,6 +37,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MinecraftApi.Core.Rcon", "src\Core\MinecraftApi.Core.Rcon\MinecraftApi.Core.Rcon.csproj", "{8C6C2019-02CE-4807-9AC7-FFB29B1145B7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MinecraftApi.Core.Shared", "src\Core\MinecraftApi.Core.Shared\MinecraftApi.Core.Shared.csproj", "{466D5DFB-C58A-4140-8B6A-9324346B894D}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{3F6E504F-A0FD-43F2-83E3-9A68940493FB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -84,6 +86,10 @@ Global
 		{466D5DFB-C58A-4140-8B6A-9324346B894D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{466D5DFB-C58A-4140-8B6A-9324346B894D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{466D5DFB-C58A-4140-8B6A-9324346B894D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F6E504F-A0FD-43F2-83E3-9A68940493FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F6E504F-A0FD-43F2-83E3-9A68940493FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F6E504F-A0FD-43F2-83E3-9A68940493FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F6E504F-A0FD-43F2-83E3-9A68940493FB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -19,6 +19,10 @@ namespace MinecraftApi.Core.Ef.Models
         /// Database type used.
         /// </summary>
         public DatabaseType DatabaseType { get; set; } = DatabaseType.SqlServer;
+        /// <summary>
+        /// MySql database version used with the api. Only for MySql.
+        /// </summary>
+        public string MySQLDatabaseVersion { get; set; } = "";
     }
     /// <summary>
     /// Database types

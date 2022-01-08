@@ -17,7 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Core\MinecraftApi.Core.Rcon\MinecraftApi.Core.Rcon.csproj" />
-    <ProjectReference Include="..\..\Infrastructure\Minecraft.Rcon\Minecraft.Rcon.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\Minecraft.Rcon\MinecraftApi.Rcon.csproj" />
   </ItemGroup>
     <PropertyGroup>
 	    <UserSecretsId>$(MSBuildProjectName)-9c0a3c9d-e351-4245-98e7-4d95b95a77c9</UserSecretsId>

@@ -1,5 +1,6 @@
 ﻿using MinecraftApi.Core.Rcon.Contracts.Models;
 using MinecraftApi.Core.Rcon.Models;
+using MinecraftApi.Rcon.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -20,13 +20,11 @@ builder.Services.AddDbContext<BaseDbContext>(options =>
             options.UseSqlServer(opts.ConnectionString);
             break;
         case DatabaseType.MySQL:
-            //options.UseMySql(opts.ConnectionString); // TODO: make this compatible with MySql.
+            var serverVersion = new MySqlServerVersion(opts.MySQLDatabaseVersion);
+            options.UseMySql(opts.ConnectionString, serverVersion); // TODO: make this compatible with MySql.
             break;
     }
-    
-    
 });
-
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

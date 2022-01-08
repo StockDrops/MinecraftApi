@@ -1,4 +1,5 @@
 ﻿using MinecraftApi.Core.Rcon.Contracts.Models;
+using MinecraftApi.Core.Rcon.Models;
 using MinecraftApi.Core.Shared.Helpers;
 using System;
 using System.Collections.Generic;
@@ -6,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MinecraftApi.Core.Rcon.Models
+namespace MinecraftApi.Rcon.Models
 {
     /// <summary>
     /// Class defining a message used in the RCON protocol

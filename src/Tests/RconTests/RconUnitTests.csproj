@@ -16,7 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Core\MinecraftApi.Core.Rcon\MinecraftApi.Core.Rcon.csproj" />
-    <ProjectReference Include="..\..\Infrastructure\Minecraft.Rcon\Minecraft.Rcon.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\Minecraft.Rcon\MinecraftApi.Rcon.csproj" />
   </ItemGroup>
 
 </Project>

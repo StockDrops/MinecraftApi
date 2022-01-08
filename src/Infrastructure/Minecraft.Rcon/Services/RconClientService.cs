@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
 using MinecraftApi.Core.Rcon.Contracts.Models;
 using MinecraftApi.Core.Rcon.Models;
+using MinecraftApi.Rcon.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -83,7 +84,7 @@ namespace MinecraftApi.Rcon.Services
         /// <returns></returns>
         public async Task<bool> AuthenticateAsync(CancellationToken token)
         {
-            var result = await SendMessageAsync(new Core.Rcon.Models.RconMessage
+            var result = await SendMessageAsync(new RconMessage
             {
                 Body = Encoding.ASCII.GetBytes(options.Password),
                 RequestId = 0,

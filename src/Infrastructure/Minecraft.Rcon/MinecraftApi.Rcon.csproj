@@ -6,6 +6,8 @@
     <Nullable>enable</Nullable>
 	  <GenerateDocumentationFile>true</GenerateDocumentationFile>
 	  <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+	  <Version>0.1.0-dev</Version>
+	  <!--<Version>$(VersionPrefix)</Version>-->
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -17,7 +19,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\MinecraftApi.Core.Rcon\MinecraftApi.Core.Rcon.csproj" />
+    <ProjectReference Include="..\..\Core\MinecraftApi.Core.Rcon\MinecraftApi.Core.Rcon.csproj" />
   </ItemGroup>
 
 </Project>

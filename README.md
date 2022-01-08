@@ -34,3 +34,11 @@ We would have Core subdivided into smaller cores which define interfaces/pocos r
 Then we would have infrastructure projects (without the core keyword) that implement the core libraries with as little dependencies as possible.
 
 In this way we can distribute as many nuget packages as possible for multiple applications without adding redundency nor unnecessary dependencies.
+
+# Database
+
+The project aims to be compatible with MySQL and MS Sql Server. We will allow you to choose which one to use and we are aiming at making the DB creation as simple as possible by using Docker.
+
+Remember that if using MS Sql Server you still need to have a valid license for it when you accept the EULA as part of the docker-compose command.
+
+You can find more information here: https://github.com/Microsoft/mssql-docker/issues/200#issuecomment-345314344 (as you can see there's no need to enter a license key or other but you need to legally have a license).

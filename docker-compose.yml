@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  minecraftapi.api:
+    image: ${DOCKER_REGISTRY-}minecraftapiapi
+    build:
+      context: .
+      dockerfile: src/MinecraftApi.Api/MinecraftApi.Api/Dockerfile

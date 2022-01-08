@@ -1,5 +1,5 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Minecraft.Rcon.Models;
+using MinecraftApi.Rcon.Models;
 using MinecraftApi.Core.Rcon.Models;
 using MinecraftApi.Rcon.Services;
 using System.Text;
