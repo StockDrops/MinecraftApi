@@ -38,7 +38,7 @@ namespace RconIntegrationTests
         {
             var tokenSource = new CancellationTokenSource();
             tokenSource.CancelAfter(10000); //a 10s timeout
-            var command = "kill Chinss";
+            var command = "gm c lordhenry85";
             var message = new RconMessage
             {
                 Body = Encoding.ASCII.GetBytes(command),
@@ -48,10 +48,8 @@ namespace RconIntegrationTests
             await rconClient.InitializeAsync(tokenSource.Token);
             await rconClient.AuthenticateAsync(tokenSource.Token);
             var result = await rconClient.SendMessageAsync(message, tokenSource.Token);
-            if(result.RequestId == 1)
-            {
-
-            }
+            Assert.IsTrue(result.RequestId == 1);
+            Assert.IsTrue(result.Type == RconMessageType.Response);
         }        
         /// <summary>
         /// Tests the connection to RCON, i.e. just the initialization of the TCP connection
