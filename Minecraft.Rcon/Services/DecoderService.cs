@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MinecraftApi.Core.Rcon.Services
+namespace MinecraftApi.Rcon.Services
 {
     /// <summary>
     /// Class used to decode the rcon messages

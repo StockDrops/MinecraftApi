@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 using MinecraftApi.Core.Rcon.Contracts.Models;
+using MinecraftApi.Core.Rcon.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,37 +8,8 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MinecraftApi.Core.Rcon.Services
+namespace MinecraftApi.Rcon.Services
 {
-    /// <summary>
-    /// Class used for IOptions so that the class is usable with dependency injection.
-    /// </summary>
-    public class RconClientServiceOptions
-    {
-        /// <summary>
-        /// Create a new options for the RconClientService.
-        /// </summary>
-        /// <param name="host"></param>
-        /// <param name="port"></param>
-        public RconClientServiceOptions(string host, int port, string password)
-        {
-            Host = host;
-            Port = port;
-            Password = password;
-        }
-        /// <summary>
-        /// Host to use with the connection
-        /// </summary>
-        public string Host { get; }
-        /// <summary>
-        /// Port to use with the connection.
-        /// </summary>
-        public int Port { get; }
-        /// <summary>
-        /// Password used in the RCON connection.
-        /// </summary>
-        public string Password { get; }
-    }
     /// <summary>
     /// Class to send RCON messages
     /// </summary>
@@ -111,11 +83,11 @@ namespace MinecraftApi.Core.Rcon.Services
         /// <returns></returns>
         public async Task<bool> AuthenticateAsync(CancellationToken token)
         {
-            var result = await SendMessageAsync(new Models.RconMessage
+            var result = await SendMessageAsync(new Core.Rcon.Models.RconMessage
             {
                 Body = Encoding.ASCII.GetBytes(options.Password),
                 RequestId = 0,
-                Type = Models.RconMessageType.Authenticate
+                Type = Core.Rcon.Models.RconMessageType.Authenticate
             }, token);
             if (result.RequestId == -1)
                 return false;

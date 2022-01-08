@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MinecraftApi.Core.Rcon.Services;
+using MinecraftApi.Core.Rcon.Models;
+using MinecraftApi.Rcon.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;

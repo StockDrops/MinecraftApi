@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MinecraftApi.Core.Rcon.Models;
-using MinecraftApi.Core.Rcon.Services;
+using MinecraftApi.Rcon.Services;
 using System;
 using System.Text;
 using System.Threading;

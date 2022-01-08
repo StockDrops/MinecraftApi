@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Minecraft.Rcon\Minecraft.Rcon.csproj" />
     <ProjectReference Include="..\src\MinecraftApi.Core.Rcon\MinecraftApi.Core.Rcon.csproj" />
   </ItemGroup>
     <PropertyGroup>

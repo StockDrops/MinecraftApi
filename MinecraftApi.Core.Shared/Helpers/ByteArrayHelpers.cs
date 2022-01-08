@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MinecraftApi.Core.Rcon.Helpers
+namespace MinecraftApi.Core.Shared.Helpers
 {
     /// <summary>
     /// Extension methods for byte arrays

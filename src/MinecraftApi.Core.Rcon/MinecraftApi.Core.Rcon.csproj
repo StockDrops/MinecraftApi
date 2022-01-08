@@ -19,4 +19,8 @@
     <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\MinecraftApi.Core.Shared\MinecraftApi.Core.Shared.csproj" />
+  </ItemGroup>
+
 </Project>

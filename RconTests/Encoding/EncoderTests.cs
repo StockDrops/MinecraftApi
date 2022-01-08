@@ -1,6 +1,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MinecraftApi.Core.Rcon.Models;
-using MinecraftApi.Core.Rcon.Services;
+using MinecraftApi.Rcon.Services;
 using System.Text;
 
 namespace RconUnitTests
