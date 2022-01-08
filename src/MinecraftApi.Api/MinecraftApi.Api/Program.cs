@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
-using MinecraftApi.Core.Ef.Models;
+using MinecraftApi.Ef.Models;
 using MinecraftApi.Api.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);

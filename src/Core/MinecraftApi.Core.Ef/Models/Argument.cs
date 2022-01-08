@@ -1,12 +1,12 @@
 ﻿using MinecraftApi.Core.Api.Contracts.Models;
-using MinecraftApi.Core.Ef.Contracts.Models;
+using MinecraftApi.Ef.Contracts.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MinecraftApi.Core.Ef.Models
+namespace MinecraftApi.Ef.Models
 {
     /// <summary>
     /// Argument class for the 

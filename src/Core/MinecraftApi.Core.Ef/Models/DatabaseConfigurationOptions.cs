@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MinecraftApi.Core.Ef.Models
+namespace MinecraftApi.Ef.Models
 {
     /// <summary>
     /// Options to be used with configuring the database

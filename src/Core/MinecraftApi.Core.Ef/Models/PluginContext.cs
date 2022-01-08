@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MinecraftApi.Core.Ef.Models
+namespace MinecraftApi.Ef.Models
 {
     /// <summary>
     /// Base db context for use in other specific infrastructure projects.
