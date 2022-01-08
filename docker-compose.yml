@@ -12,12 +12,13 @@ services:
         - db
   db:
     image: mcr.microsoft.com/mssql/server
+    user: root
     volumes:
       - mssql-server-minecraftapi-data:/var/opt/mssql/data
     environment:
         SA_PASSWORD: "${DB_PW}"
         ACCEPT_EULA: "Y"
-        MSSQL_PID: "Enterprise"
+        MSSQL_PID: "Developer"
     ports:
       - "1433:1433"
 volumes:

@@ -12,6 +12,15 @@ namespace MinecraftApi.Core.Ef.Models
     /// </summary>
     public class PluginContext : DbContext
     {
+        ///<inheritdoc/>
+        public PluginContext(DbContextOptions options) : base(options)
+        {
+        }
+        ///<inheritdoc/>
+        protected PluginContext()
+        {
+        }
+
         /// <summary>
         /// Plugins for the EF Core base.
         /// </summary>

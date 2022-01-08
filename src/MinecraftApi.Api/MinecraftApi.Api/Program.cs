@@ -11,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
 // load the database options
-var opts = builder.Configuration.Get<DatabaseConfigurationOptions>();
+var opts = builder.Configuration.GetSection(nameof(DatabaseConfigurationOptions)).Get<DatabaseConfigurationOptions>();
 // replace the password with the real password stored in secrets
 opts.ConnectionString = opts.ConnectionString.Replace("[DB_PW]", builder.Configuration["DB_PW"]);
 builder.Services.Configure<DatabaseConfigurationOptions>(builder.Configuration.GetSection(nameof(DatabaseConfigurationOptions)));
