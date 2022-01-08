@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\MinecraftApi.Core.Shared\MinecraftApi.Core.Shared.csproj" />
+    <ProjectReference Include="..\MinecraftApi.Core.Shared\MinecraftApi.Core.Shared.csproj" />
   </ItemGroup>
 
 </Project>
