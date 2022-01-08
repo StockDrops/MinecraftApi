@@ -12,9 +12,17 @@ namespace MinecraftApi.Ef.Models
     public class DatabaseConfigurationOptions
     {
         /// <summary>
-        /// Connection string to be used
+        /// Connection string to be used. for username use [Username] and for password [DB_PW]. They will be replaced with the secret values.
         /// </summary>
         public string ConnectionString { get; set; } = "";
+        /// <summary>
+        /// The username to use. 
+        /// </summary>
+        public string UserName { get; set; } = "";
+        /// <summary>
+        /// The password to use.
+        /// </summary>
+        public string Password { get; set; } = "";
         /// <summary>
         /// Database type used.
         /// </summary>

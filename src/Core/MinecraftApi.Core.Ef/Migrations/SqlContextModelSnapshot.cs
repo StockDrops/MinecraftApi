@@ -4,14 +4,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using MinecraftApi.Ef.Models;
+using MinecraftApi.Ef.Models.Contexts;
 
 #nullable disable
 
 namespace MinecraftApi.Ef.Migrations
 {
-    [DbContext(typeof(PluginContext))]
-    partial class PluginContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(SqlContext))]
+    partial class SqlContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
@@ -22,7 +22,7 @@ namespace MinecraftApi.Ef.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("MinecraftApi.Core.Ef.Models.Argument", b =>
+            modelBuilder.Entity("MinecraftApi.Ef.Models.Argument", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -47,7 +47,7 @@ namespace MinecraftApi.Ef.Migrations
                     b.ToTable("Arguments");
                 });
 
-            modelBuilder.Entity("MinecraftApi.Core.Ef.Models.Command", b =>
+            modelBuilder.Entity("MinecraftApi.Ef.Models.Command", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -69,7 +69,7 @@ namespace MinecraftApi.Ef.Migrations
                     b.ToTable("Commands");
                 });
 
-            modelBuilder.Entity("MinecraftApi.Core.Ef.Models.Plugin", b =>
+            modelBuilder.Entity("MinecraftApi.Ef.Models.Plugin", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()

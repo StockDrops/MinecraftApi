@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,17 +11,8 @@ namespace MinecraftApi.Ef.Models
     /// <summary>
     /// Base db context for use in other specific infrastructure projects.
     /// </summary>
-    public class PluginContext : DbContext
+    public interface IPluginContext
     {
-        ///<inheritdoc/>
-        public PluginContext(DbContextOptions options) : base(options)
-        {
-        }
-        ///<inheritdoc/>
-        protected PluginContext()
-        {
-        }
-
         /// <summary>
         /// Plugins for the EF Core base.
         /// </summary>

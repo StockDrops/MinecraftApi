@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
 using MinecraftApi.Ef.Models;
 using MinecraftApi.Api.Extensions;
+using MinecraftApi.Ef.Models.Contexts;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,21 +15,24 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 var opts = builder.Configuration.GetSection(nameof(DatabaseConfigurationOptions)).Get<DatabaseConfigurationOptions>();
 // replace the password with the real password stored in secrets
 opts.ConnectionString = opts.ConnectionString.Replace("[DB_PW]", builder.Configuration["DB_PW"]);
-builder.Services.Configure<DatabaseConfigurationOptions>(builder.Configuration.GetSection(nameof(DatabaseConfigurationOptions)));
-//Add the database:
-builder.Services.AddDbContext<PluginContext>(options =>
+
+builder.Services.Configure<DatabaseConfigurationOptions>((options) => 
 {
-    switch (opts.DatabaseType)
-    {
-        case DatabaseType.SqlServer:
-            options.UseSqlServer(opts.ConnectionString);
-            break;
-        case DatabaseType.MySQL:
-            var serverVersion = new MySqlServerVersion(opts.MySQLDatabaseVersion);
-            options.UseMySql(opts.ConnectionString, serverVersion); // TODO: make this compatible with MySql.
-            break;
-    }
+    options.ConnectionString = opts.ConnectionString;
+    options.Password = builder.Configuration["DB_PW"];
+    options.DatabaseType = opts.DatabaseType;
 });
+
+//Add the database:
+switch (opts.DatabaseType)
+{
+    case DatabaseType.SqlServer:
+        builder.Services.AddDbContext<IPluginContext, SqlContext>();
+        break;
+    case DatabaseType.MySQL:
+        builder.Services.AddDbContext<IPluginContext, MySqlContext>();
+        break;
+}
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -53,6 +57,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 //Migrate the database //TODO: make this optional in case the user prefers to manage it themselves.
-app.MigrateDatabase<PluginContext>();
+app.MigrateDatabase<IPluginContext>();
 
 app.Run();

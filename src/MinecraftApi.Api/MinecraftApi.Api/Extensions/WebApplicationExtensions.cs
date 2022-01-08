@@ -13,15 +13,16 @@ namespace MinecraftApi.Api.Extensions
         /// <typeparam name="T"></typeparam>
         /// <param name="webApplication"></param>
         /// <returns></returns>
-        public static IHost MigrateDatabase<T>(this IHost webApplication) where T : DbContext
+        public static IHost MigrateDatabase<T>(this IHost webApplication) where T : notnull
         {
             using (var scope = webApplication.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
                 try
                 {
-                    var db = services.GetRequiredService<T>();
-                    db.Database.Migrate();
+                    var db = services.GetRequiredService<T>() as DbContext;
+                    if(db != null)
+                        db.Database.Migrate();
                 }
                 catch (Exception ex)
                 {

@@ -5,20 +5,18 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using MinecraftApi.Ef.Models;
+using MinecraftApi.Ef.Models.Contexts;
 
 #nullable disable
 
 namespace MinecraftApi.Ef.Migrations
 {
-
-    [DbContext(typeof(PluginContext))]
-    [Migration("20220108211951_Initial")]
+    [DbContext(typeof(SqlContext))]
+    [Migration("20220108230323_Initial")]
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     partial class Initial
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+
     {
-        /// <inheritdoc/>
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
@@ -28,7 +26,7 @@ namespace MinecraftApi.Ef.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("MinecraftApi.Core.Ef.Models.Argument", b =>
+            modelBuilder.Entity("MinecraftApi.Ef.Models.Argument", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -53,7 +51,7 @@ namespace MinecraftApi.Ef.Migrations
                     b.ToTable("Arguments");
                 });
 
-            modelBuilder.Entity("MinecraftApi.Core.Ef.Models.Command", b =>
+            modelBuilder.Entity("MinecraftApi.Ef.Models.Command", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -75,7 +73,7 @@ namespace MinecraftApi.Ef.Migrations
                     b.ToTable("Commands");
                 });
 
-            modelBuilder.Entity("MinecraftApi.Core.Ef.Models.Plugin", b =>
+            modelBuilder.Entity("MinecraftApi.Ef.Models.Plugin", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -94,3 +92,4 @@ namespace MinecraftApi.Ef.Migrations
         }
     }
 }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
