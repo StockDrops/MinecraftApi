@@ -11,6 +11,11 @@ After that we will implement the API allowing remote commands through an API.
 
 Contributions are always welcome. We ask you to adhere to our Code of Conduct, and of course keep the same license. All code contributions are considered to be acceptance that you will provide the same license we use in the project.
 
+Completed:
+
+- We have completed the Rcon implementation.
+- We have added a first abstraction to make sending commands easy through Json.
+
 Also feel free to join our discord at https://discord.gg/stockdrops to discuss the project.
 
 # Architecture
