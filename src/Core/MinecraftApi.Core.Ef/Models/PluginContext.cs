@@ -10,7 +10,7 @@ namespace MinecraftApi.Core.Ef.Models
     /// <summary>
     /// Base db context for use in other specific infrastructure projects.
     /// </summary>
-    public class BaseDbContext : DbContext
+    public class PluginContext : DbContext
     {
         /// <summary>
         /// Plugins for the EF Core base.

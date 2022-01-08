@@ -2,7 +2,7 @@
 
 namespace MinecraftApi.Ef.Sql
 {
-    public class DefaultApiDbContext : BaseDbContext
+    public class DefaultApiDbContext : PluginContext
     {
 
     }

@@ -3,16 +3,20 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
 using MinecraftApi.Core.Ef.Models;
+using MinecraftApi.Api.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
+// load the database options
 var opts = builder.Configuration.Get<DatabaseConfigurationOptions>();
+// replace the password with the real password stored in secrets
+opts.ConnectionString = opts.ConnectionString.Replace("[DB_PW]", builder.Configuration["DB_PW"]);
 builder.Services.Configure<DatabaseConfigurationOptions>(builder.Configuration.GetSection(nameof(DatabaseConfigurationOptions)));
 //Add the database:
-builder.Services.AddDbContext<BaseDbContext>(options =>
+builder.Services.AddDbContext<PluginContext>(options =>
 {
     switch (opts.DatabaseType)
     {
@@ -30,6 +34,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+//migrate the database:
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -45,5 +51,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+//Migrate the database //TODO: make this optional in case the user prefers to manage it themselves.
+app.MigrateDatabase<PluginContext>();
 
 app.Run();
