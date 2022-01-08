@@ -1,4 +1,5 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Minecraft.Rcon.Models;
 using MinecraftApi.Core.Rcon.Models;
 using MinecraftApi.Rcon.Services;
 using System.Text;
@@ -30,6 +31,48 @@ namespace RconUnitTests
             if(rconMessage.RawMessage != null)
             {
                  CollectionAssert.AreEqual(expectedrawmessage, rconMessage.RawMessage);
+            }
+            else
+            {
+                Assert.Fail("RawMessage cannot be null at this point");
+            }
+        }
+        [TestMethod]
+        public void CreateTextMessage()
+        {
+            var textMessage = new RconTextMessage("test", 1, RconMessageType.Command);
+            byte[]? expectedrawmessage = new byte[]
+            {
+                14, 0, 0, 0, // Message length.
+                1, 0, 0, 0, // Message Id
+                2, 0, 0, 0, //Message Type
+                116, 101, 115, 116,
+                0,0, //Terminator
+            };
+            if (textMessage.RawMessage != null)
+            {
+                CollectionAssert.AreEqual(expectedrawmessage, textMessage.RawMessage);
+            }
+            else
+            {
+                Assert.Fail("RawMessage cannot be null at this point");
+            }
+        }
+        [TestMethod]
+        public void CreateCommandMessage()
+        {
+            var commandMessage = new RconCommand("test", 1);
+            byte[]? expectedrawmessage = new byte[]
+            {
+                14, 0, 0, 0, // Message length.
+                1, 0, 0, 0, // Message Id
+                2, 0, 0, 0, //Message Type
+                116, 101, 115, 116,
+                0,0, //Terminator
+            };
+            if (commandMessage.RawMessage != null)
+            {
+                CollectionAssert.AreEqual(expectedrawmessage, commandMessage.RawMessage);
             }
             else
             {
