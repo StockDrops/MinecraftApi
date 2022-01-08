@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\MinecraftApi.Core.Ef\MinecraftApi.Core.Ef.csproj" />
+  </ItemGroup>
+
 </Project>

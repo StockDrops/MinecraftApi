@@ -1,6 +1,8 @@
-﻿namespace MinecraftApi.Ef.Sql
+﻿using MinecraftApi.Core.Ef.Models;
+
+namespace MinecraftApi.Ef.Sql
 {
-    public class Class1
+    public class DefaultApiDbContext : BaseDbContext
     {
 
     }
