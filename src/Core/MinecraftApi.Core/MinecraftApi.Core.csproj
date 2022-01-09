@@ -17,7 +17,6 @@
 
   <ItemGroup>
     <Folder Include="Contracts\Models\" />
-    <Folder Include="Services\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,6 +24,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Infrastructure\Minecraft.Rcon\MinecraftApi.Rcon.csproj" />
     <ProjectReference Include="..\Minecraft.Core.Api\MinecraftApi.Core.Api.csproj" />
     <ProjectReference Include="..\MinecraftApi.Core.Rcon\MinecraftApi.Core.Rcon.csproj" />
     <ProjectReference Include="..\MinecraftApi.Core.Shared\MinecraftApi.Core.Shared.csproj" />

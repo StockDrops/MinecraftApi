@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 using MinecraftApi.Core.Rcon.Contracts.Models;
+using MinecraftApi.Core.Rcon.Contracts.Services;
 using MinecraftApi.Core.Rcon.Models;
 using MinecraftApi.Rcon.Models;
 using System;
@@ -14,24 +15,31 @@ namespace MinecraftApi.Rcon.Services
     /// <summary>
     /// Class to send RCON messages
     /// </summary>
-    public class RconClientService : IDisposable
+    public class RconClientService : IRconClientService
     {
         private TcpClient tcpClient;
         private NetworkStream? networkStream;
 
         private RconClientServiceOptions options;
-        
+
         /// <summary>
         /// Allows you to set the Password after initialization IF you set something wrong.
         /// </summary>
         public string Password
         {
-            set 
+            set
             {
                 options = new RconClientServiceOptions(options.Host, options.Port, value);
             }
         }
-
+        /// <summary>
+        /// Is the client initialized?
+        /// </summary>
+        public bool IsInitialized => tcpClient.Connected;
+        /// <summary>
+        /// Is the RCON client authenticated with the server already?
+        /// </summary>
+        public bool IsAuthenticated { get; private set; } = false;
         /// <summary>
         /// Default constructor. Provide the connection information to be able to create the TcpClient
         /// </summary>
@@ -92,6 +100,7 @@ namespace MinecraftApi.Rcon.Services
             }, token);
             if (result.RequestId == -1)
                 return false;
+            IsAuthenticated = true;
             return true;
         }
 
@@ -108,7 +117,7 @@ namespace MinecraftApi.Rcon.Services
             Memory<byte> memory = new Memory<byte>(new byte[1024]);
             await networkStream.WriteAsync(message.RawMessage, cancellationToken);
             var bytesRead = await networkStream.ReadAsync(memory, cancellationToken);
-            if(bytesRead > 0)
+            if (bytesRead > 0)
             {
                 return DecoderService.Decode(memory.ToArray());
             }
