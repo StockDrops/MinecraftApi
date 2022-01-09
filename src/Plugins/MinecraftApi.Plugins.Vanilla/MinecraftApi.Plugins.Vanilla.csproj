@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\Core\Minecraft.Core.Api\MinecraftApi.Core.Api.csproj" />
-    <ProjectReference Include="..\src\Core\MinecraftApi.Core\MinecraftApi.Core.csproj" />
+    <ProjectReference Include="..\..\Core\Minecraft.Core.Api\MinecraftApi.Core.Api.csproj" />
+    <ProjectReference Include="..\..\Core\MinecraftApi.Core\MinecraftApi.Core.csproj" />
   </ItemGroup>
 
 </Project>
