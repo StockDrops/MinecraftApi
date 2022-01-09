@@ -43,7 +43,7 @@ namespace MinecraftApi.Ef.Services
             if (_pluginContext.Commands == null)
                 return null;
             else
-                return await _pluginContext.Commands.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+                return await _pluginContext.Commands.Include(c => c.Arguments).FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
         }
         /// <summary>
         /// Returns all plugins containing that search string in their prefix.
