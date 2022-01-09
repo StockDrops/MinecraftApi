@@ -10,37 +10,19 @@ using System.Threading.Tasks;
 namespace MinecraftApi.Ef.Models.Contexts
 {
     ///<inheritdoc/>
-    public class SqlContext : DbContext, IPluginContext
+    public class SqlContext : PluginContext
     {
-        private readonly DatabaseConfigurationOptions _databaseConfiguration = new DatabaseConfigurationOptions();
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="databaseConfigurationOptions"></param>
-        public SqlContext(IOptions<DatabaseConfigurationOptions> databaseConfigurationOptions)
+        ///<inherit/>
+        public SqlContext(IOptions<DatabaseConfigurationOptions> databaseConfigurationOptions) : base(databaseConfigurationOptions)
         {
-            _databaseConfiguration = databaseConfigurationOptions.Value;
         }
+
         /// <inheritdoc/>
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
             optionsBuilder.UseSqlServer(_databaseConfiguration.ConnectionString);
         }
-        /////<inheritdoc/>
-        //public SqlContext(DbContextOptions options) : base(options)
-        //{
-        //}
-        /////<inheritdoc/>
-        //protected SqlContext()
-        //{
-        //}
-        /// <inheritdoc/>
-        public DbSet<Plugin>? Plugins { get; set; }
-        /// <inheritdoc/>
-        public DbSet<Command>? Commands { get; set; }
-        /// <inheritdoc/>
-        public DbSet<Argument>? Arguments { get; set; }
     }
     /// <summary>
     /// Factory for creating migrations at design time.

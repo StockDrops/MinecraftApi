@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 namespace MinecraftApi.Core.Api.Contracts.Models
 {
     /// <summary>
-    /// General command used on Minecraft
+    /// General command used on Minecraft that can be saved and tracked since it holds an Id.
     /// </summary>
-    public interface ICommand
+    public interface ICommandEntity<T> : IEntity where T : IArgumentEntity
     {
         /// <summary>
         /// Name of the command. This is not the prefix used. It's a user given name used for easy reference.
@@ -26,6 +26,6 @@ namespace MinecraftApi.Core.Api.Contracts.Models
         /// <summary>
         /// Arguments for the command in the order to be given.
         /// </summary>
-        public IList<IArgument>? Arguments { get; set; }
+        public IList<T>? Arguments { get; set; }
     }
 }

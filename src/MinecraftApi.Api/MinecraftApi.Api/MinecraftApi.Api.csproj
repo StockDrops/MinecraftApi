@@ -34,6 +34,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\MinecraftApi.Plugins.Vanilla\MinecraftApi.Plugins.Vanilla.csproj" />
     <ProjectReference Include="..\..\Core\MinecraftApi.Core.Ef\MinecraftApi.Ef.csproj" />
   </ItemGroup>
 

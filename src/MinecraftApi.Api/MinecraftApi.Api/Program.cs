@@ -5,6 +5,7 @@ using Microsoft.Identity.Web;
 using MinecraftApi.Ef.Models;
 using MinecraftApi.Api.Extensions;
 using MinecraftApi.Ef.Models.Contexts;
+using MinecraftApi.Ef.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,12 +28,17 @@ builder.Services.Configure<DatabaseConfigurationOptions>((options) =>
 switch (opts.DatabaseType)
 {
     case DatabaseType.SqlServer:
-        builder.Services.AddDbContext<IPluginContext, SqlContext>();
+        builder.Services.AddDbContext<PluginContext, SqlContext>();
         break;
     case DatabaseType.MySQL:
-        builder.Services.AddDbContext<IPluginContext, MySqlContext>();
+        builder.Services.AddDbContext<PluginContext, MySqlContext>();
         break;
 }
+
+builder.Services.AddScoped<PluginService>();
+builder.Services.AddScoped<ArgumentService>();
+builder.Services.AddScoped<CommandService>();
+
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -57,6 +63,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 //Migrate the database //TODO: make this optional in case the user prefers to manage it themselves.
-app.MigrateDatabase<IPluginContext>();
-
+app.MigrateDatabase<PluginContext>();
+app.SeedData<PluginContext>();
 app.Run();

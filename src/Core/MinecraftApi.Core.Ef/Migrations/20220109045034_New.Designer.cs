@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MinecraftApi.Ef.Models.Contexts;
 
@@ -10,17 +11,15 @@ using MinecraftApi.Ef.Models.Contexts;
 
 namespace MinecraftApi.Ef.Migrations
 {
-    /// <summary>
-    /// 
-    /// </summary>
     [DbContext(typeof(SqlContext))]
-    partial class SqlContextModelSnapshot : ModelSnapshot
+    [Migration("20220109045034_New")]
+    partial class New
     {
         /// <summary>
         /// 
         /// </summary>
         /// <param name="modelBuilder"></param>
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

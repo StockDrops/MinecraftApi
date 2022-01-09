@@ -25,6 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Minecraft.Core.Api\MinecraftApi.Core.Api.csproj" />
     <ProjectReference Include="..\MinecraftApi.Core.Rcon\MinecraftApi.Core.Rcon.csproj" />
     <ProjectReference Include="..\MinecraftApi.Core.Shared\MinecraftApi.Core.Shared.csproj" />
   </ItemGroup>

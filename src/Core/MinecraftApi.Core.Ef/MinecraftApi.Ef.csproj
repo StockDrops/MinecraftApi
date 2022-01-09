@@ -33,6 +33,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Minecraft.Core.Api\MinecraftApi.Core.Api.csproj" />
+    <ProjectReference Include="..\MinecraftApi.Core\MinecraftApi.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Contracts\Models\" />
   </ItemGroup>
 
 </Project>

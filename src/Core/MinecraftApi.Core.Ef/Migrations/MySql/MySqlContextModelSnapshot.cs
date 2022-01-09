@@ -25,6 +25,9 @@ namespace MinecraftApi.Ef.Migrations.MySql
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
+                    b.Property<long>("CommandId")
+                        .HasColumnType("bigint");
+
                     b.Property<string>("Description")
                         .HasColumnType("longtext");
 
@@ -34,10 +37,12 @@ namespace MinecraftApi.Ef.Migrations.MySql
                     b.Property<int?>("Order")
                         .HasColumnType("int");
 
-                    b.Property<string>("Value")
-                        .HasColumnType("longtext");
+                    b.Property<bool>("Required")
+                        .HasColumnType("tinyint(1)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CommandId");
 
                     b.ToTable("Arguments");
                 });
@@ -54,10 +59,15 @@ namespace MinecraftApi.Ef.Migrations.MySql
                     b.Property<string>("Name")
                         .HasColumnType("longtext");
 
+                    b.Property<long>("PluginId")
+                        .HasColumnType("bigint");
+
                     b.Property<string>("Prefix")
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PluginId");
 
                     b.ToTable("Commands");
                 });
@@ -69,11 +79,46 @@ namespace MinecraftApi.Ef.Migrations.MySql
                         .HasColumnType("bigint");
 
                     b.Property<string>("Name")
-                        .HasColumnType("longtext");
+                        .HasColumnType("varchar(255)");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Name")
+                        .IsUnique();
+
                     b.ToTable("Plugins");
+                });
+
+            modelBuilder.Entity("MinecraftApi.Ef.Models.Argument", b =>
+                {
+                    b.HasOne("MinecraftApi.Ef.Models.Command", "Command")
+                        .WithMany("Arguments")
+                        .HasForeignKey("CommandId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Command");
+                });
+
+            modelBuilder.Entity("MinecraftApi.Ef.Models.Command", b =>
+                {
+                    b.HasOne("MinecraftApi.Ef.Models.Plugin", "Plugin")
+                        .WithMany("Commands")
+                        .HasForeignKey("PluginId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Plugin");
+                });
+
+            modelBuilder.Entity("MinecraftApi.Ef.Models.Command", b =>
+                {
+                    b.Navigation("Arguments");
+                });
+
+            modelBuilder.Entity("MinecraftApi.Ef.Models.Plugin", b =>
+                {
+                    b.Navigation("Commands");
                 });
 #pragma warning restore 612, 618
         }

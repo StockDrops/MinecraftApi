@@ -15,4 +15,8 @@
     <WarningsAsErrors>$(WarningsAsErrors);NU1605;CS1591</WarningsAsErrors>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Contracts\Models\Plugins\" />
+  </ItemGroup>
+
 </Project>

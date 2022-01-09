@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MinecraftApi.Ef.Contracts.Models
+namespace MinecraftApi.Core.Api.Contracts.Models
 {
     /// <summary>
     /// Defines a database entity.

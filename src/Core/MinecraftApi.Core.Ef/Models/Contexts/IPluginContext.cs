@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+using MinecraftApi.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,8 +13,20 @@ namespace MinecraftApi.Ef.Models
     /// <summary>
     /// Base db context for use in other specific infrastructure projects.
     /// </summary>
-    public interface IPluginContext
+    public class PluginContext : DbContext
     {
+        /// <summary>
+        /// Configuration used.
+        /// </summary>
+        protected readonly DatabaseConfigurationOptions _databaseConfiguration = new DatabaseConfigurationOptions();
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="databaseConfigurationOptions"></param>
+        public PluginContext(IOptions<DatabaseConfigurationOptions> databaseConfigurationOptions)
+        {
+            _databaseConfiguration = databaseConfigurationOptions.Value;
+        }
         /// <summary>
         /// Plugins for the EF Core base.
         /// </summary>
@@ -25,5 +39,15 @@ namespace MinecraftApi.Ef.Models
         /// Arguments to store in the database
         /// </summary>
         public DbSet<Argument>? Arguments { get; set; }
+
+        /// <inheritdoc/>
+        /// All the configuration is done here to avoid the models from having attributes depending on EF Core. I want the models to be POCO as much as possible.
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Plugin>()
+                .HasIndex(p => p.Name)
+                .IsUnique();
+        }
     }
 }

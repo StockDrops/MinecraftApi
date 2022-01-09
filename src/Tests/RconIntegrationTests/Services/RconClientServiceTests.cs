@@ -40,7 +40,7 @@ namespace RconIntegrationTests
         {
             var tokenSource = new CancellationTokenSource();
             tokenSource.CancelAfter(10000); //a 10s timeout
-            var command = "gm c lordhenry85";
+            var command = "sudo lordhenry85 c:/isee lordhenry85";
             var message = new RconMessage
             {
                 Body = Encoding.ASCII.GetBytes(command),
