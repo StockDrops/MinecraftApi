@@ -1,6 +1,15 @@
 # MinecraftApi
 This project aims to develop a REST API around Minecraft RCON allowing Minecraft servers to manage and run commands using a REST API on their Minecraft Server.
 
+# Current Endpoints
+
+As of the time of writing this readme (01/09/2022) I've developped the following endpoints more or less. It's all a work in progress but the Run controller works and has been thouroughly tested. Some of the other endpoints in there (the PUT, and DELETE methods) need to be implemented.
+
+You can for now if you want to experiment use docker-compose to run it, use ``docker-compose up`` on the directory project. (or use Visual Studio and hit run on the Docker-Compose project). No need to set up databases. It is all included in the Docker Compose file.
+
+![image](https://user-images.githubusercontent.com/20151415/148724141-d003dfa9-8408-4c59-930a-dd443adc7522.png)
+
+
 # State
 
 This project started on **01/06/2022**. **So it's extremely fresh**. For now all the code is doing the RCON implementation.
