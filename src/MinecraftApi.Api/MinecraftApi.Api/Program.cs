@@ -48,7 +48,7 @@ switch (opts.DatabaseType)
 
 builder.Services.AddScoped<PluginService>();
 builder.Services.AddScoped<ArgumentService>();
-builder.Services.AddScoped<CommandService>();
+builder.Services.AddScoped<ICommandService, CommandService>();
 builder.Services.AddScoped<IRconClientService, RconClientService>();
 builder.Services.AddScoped<IRconCommandService, RconCommandService>();
 builder.Services.AddScoped<ICommandExecutionService, CommandExecutionService>();

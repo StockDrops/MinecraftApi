@@ -62,9 +62,9 @@ namespace MinecraftApi.Rcon.Services
 
             if (response.Type == RconMessageType.Response)
             {
-                return new RconResponseMessage(response.RequestId, response.Body ?? Array.Empty<byte>(), true);
+                return new MinecraftResponseMessage(response.RequestId, response.Body ?? Array.Empty<byte>(), true);
             }
-            return new RconResponseMessage(localRequestId, Array.Empty<byte>(), false);
+            return new MinecraftResponseMessage(localRequestId, Array.Empty<byte>(), false);
         }
     }
 }

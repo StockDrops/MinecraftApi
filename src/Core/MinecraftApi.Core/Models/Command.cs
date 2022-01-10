@@ -14,9 +14,51 @@ namespace MinecraftApi.Core.Models
     /// Generic Command
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class Command<T> : ICommandEntity<T> 
+    public class Command<T> : ICommandEntity<T>
         where T : IArgumentEntity
     {
+        /// <summary>
+        /// Default Constructor
+        /// </summary>
+        public Command() { }
+        /// <summary>
+        /// Copy constructor.
+        /// </summary>
+        /// <param name="commandEntity"></param>
+        public Command(ICommandEntity<T> commandEntity)
+        {
+            Arguments = commandEntity.Arguments;
+            Description = commandEntity.Description;
+            Name = commandEntity.Name;
+            PluginId = commandEntity.PluginId;
+            Prefix = commandEntity.Prefix;
+            Id = commandEntity.Id;
+        }
+        /// <summary>
+        /// Copy constructor
+        /// </summary>
+        /// <param name="commandEntity"></param>
+        public Command(ICommandEntity<Argument> commandEntity)
+        {
+            if(commandEntity.Arguments != null)
+            {
+                var newArguments = new List<T>();
+                foreach (var argument in commandEntity.Arguments)
+                {
+                    var newArgument = Activator.CreateInstance(typeof(T), argument);
+                    if (newArgument != null)
+                    {
+                        newArguments.Add((T)newArgument);
+                    }
+                }
+                Arguments = newArguments;
+            }
+            Description = commandEntity.Description;
+            Id = commandEntity.Id;
+            Name = commandEntity.Name;
+            PluginId = commandEntity.PluginId;
+            Prefix= commandEntity.Prefix;
+        }
         /// <summary>
         /// Arguments associated with the object
         /// </summary>
@@ -58,7 +100,7 @@ namespace MinecraftApi.Core.Models
         ///<inheritdoc/>
         public string Describe()
         {
-            var arguments = Arguments?.Select(x => x.ToString()).ToList();
+            var arguments = Arguments?.OrderBy(a => a.Order).Select(x => x.ToString()).ToList();
             if (arguments != null && arguments.Any())
             {
                 return $"{Name} ({Description}): {Prefix} {string.Join(" ", arguments)}";
@@ -71,7 +113,7 @@ namespace MinecraftApi.Core.Models
         /// <returns></returns>
         public override string ToString()
         {
-            var arguments = Arguments?.Select(x => x.ToString()).ToList();
+            var arguments = Arguments?.OrderBy(a => a.Order).Select(x => x.ToString()).ToList();
             if (arguments != null && arguments.Any())
             {
                 return $"{Prefix} {string.Join(" ", arguments)}";

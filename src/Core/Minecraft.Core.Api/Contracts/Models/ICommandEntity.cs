@@ -27,5 +27,9 @@ namespace MinecraftApi.Core.Api.Contracts.Models
         /// Arguments for the command in the order to be given.
         /// </summary>
         public IList<T>? Arguments { get; set; }
+        /// <summary>
+        /// The id of the associated plugin to this command.
+        /// </summary>
+        public long PluginId { get; set; }
     }
 }

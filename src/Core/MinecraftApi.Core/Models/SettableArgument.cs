@@ -34,5 +34,20 @@ namespace MinecraftApi.Core.Models
         {
             return Value;
         }
+        /// <summary>
+        /// Copy constructed.
+        /// </summary>
+        /// <param name="argument"></param>
+        public SettableArgument(Argument argument)
+        {
+            Value = "";
+            Name = argument.Name;
+            Description = argument.Description;
+            CommandId = argument.CommandId;
+            Name = argument.Name;
+            Order = argument.Order;
+            Required = argument.Required;
+            Id = argument.Id;
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MinecraftApi.Core.Api.Contracts.Models;
+using MinecraftApi.Core.Contracts.Services;
 using MinecraftApi.Core.Models;
 using MinecraftApi.Ef.Models;
 
@@ -8,7 +9,7 @@ namespace MinecraftApi.Ef.Services
     /// <summary>
     /// Handles all the CRUD operations around plugins.
     /// </summary>
-    public class CommandService
+    public class CommandService : ICommandService
     {
         private readonly PluginContext _pluginContext;
         /// <summary>
@@ -55,7 +56,7 @@ namespace MinecraftApi.Ef.Services
         public async Task<IList<Command>> SearchCommandByPrefix(string search, CancellationToken cancellationToken)
         {
             var results = new List<Command>();
-            if(_pluginContext.Commands == null)
+            if (_pluginContext.Commands == null)
             {
                 return results;
             }

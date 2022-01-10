@@ -29,7 +29,7 @@ namespace MinecraftApi.Api.Controllers
         /// <param name="command"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        [HttpPost("")]
+        [HttpPost]
         public async Task<IMinecraftResponseMessage> RunCommand([FromBody]Command<SettableArgument> command, CancellationToken token)
         {
             var response = await _commandExecutionService.ExecuteAsync(command, token);

@@ -12,7 +12,7 @@ namespace MinecraftApi.Rcon.Models
     /// <summary>
     /// An implementation of IRconResponseMessage
     /// </summary>
-    public class RconResponseMessage : IMinecraftResponseMessage
+    public class MinecraftResponseMessage : IMinecraftResponseMessage
     {
         ///<inheritdoc/>
         public int RequestId { get; }
@@ -28,13 +28,26 @@ namespace MinecraftApi.Rcon.Models
         /// <param name="requestId"></param>
         /// <param name="rawbody"></param>
         /// <param name="isSuccess"></param>
-        public RconResponseMessage(int requestId, byte[] rawbody, bool isSuccess)
+        public MinecraftResponseMessage(int requestId, byte[] rawbody, bool isSuccess)
         {
             RequestId = requestId;
             RawBody = rawbody;
             Body = Encoding.UTF8.GetString(rawbody).Trim('\0').StripColorCodes();
             IsSuccess = isSuccess;
         }
-        
+        /// <summary>
+        /// Create an empty response
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="requestId"></param>
+        /// <param name="isSuccess"></param>
+        public MinecraftResponseMessage(string message = "", int requestId = -1, bool isSuccess = false)
+        {
+            RequestId = requestId;
+            RawBody = new byte[0];
+            Body = message;
+            IsSuccess = isSuccess;
+        }
+
     }
 }
