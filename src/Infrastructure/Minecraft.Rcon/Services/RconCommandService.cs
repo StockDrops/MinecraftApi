@@ -19,7 +19,7 @@ namespace MinecraftApi.Rcon.Services
     /// That is not its job. It's job is to manage the RconClient, and translate the answer into usable text.
     /// Make sure to use it as a singleton! You need one RunCommandService on your code only since you only have one rcon server.
     /// </summary>
-    public class RunCommandService
+    public class RconCommandService : IRconCommandService
     {
         private readonly ILogger? _logger;
         private readonly IRconClientService _clientService;
@@ -31,7 +31,7 @@ namespace MinecraftApi.Rcon.Services
         /// </summary>
         /// <param name="rconClient"></param>
         /// <param name="logger"></param>
-        public RunCommandService(IRconClientService rconClient, ILogger<RunCommandService>? logger = null)
+        public RconCommandService(IRconClientService rconClient, ILogger<RconCommandService>? logger = null)
         {
             _clientService = rconClient;
             _logger = logger;
@@ -43,11 +43,11 @@ namespace MinecraftApi.Rcon.Services
         /// <param name="command"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public async Task<IRconResponseMessage> RunCommandAsync(string command, CancellationToken cancellationToken)
+        public async Task<IMinecraftResponseMessage> RunCommandAsync(string command, CancellationToken cancellationToken)
         {
             await _semaphore.WaitAsync(cancellationToken); //RCON can only do one request at a time so we will make sure to only send one at a time.
             var localRequestId = Interlocked.Add(ref requestNumber, 1);
-            if(!_clientService.IsInitialized)
+            if (!_clientService.IsInitialized)
             {
                 await _clientService.InitializeAsync(cancellationToken);
             }
@@ -59,7 +59,7 @@ namespace MinecraftApi.Rcon.Services
             var response = await _clientService.SendMessageAsync(rconCommand, cancellationToken);
             _semaphore.Release();
             //The rest of the code doesn't use the rcon server, so we can release the semaphore and allow it to receive the next command.
-            
+
             if (response.Type == RconMessageType.Response)
             {
                 return new RconResponseMessage(response.RequestId, response.Body ?? Array.Empty<byte>(), true);

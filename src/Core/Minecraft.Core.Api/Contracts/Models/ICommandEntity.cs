@@ -9,7 +9,7 @@ namespace MinecraftApi.Core.Api.Contracts.Models
     /// <summary>
     /// General command used on Minecraft that can be saved and tracked since it holds an Id.
     /// </summary>
-    public interface ICommandEntity<T> : IEntity where T : IArgumentEntity
+    public interface ICommandEntity<T> : IEntity, IFormattable where T : IArgumentEntity
     {
         /// <summary>
         /// Name of the command. This is not the prefix used. It's a user given name used for easy reference.
@@ -22,7 +22,7 @@ namespace MinecraftApi.Core.Api.Contracts.Models
         /// <summary>
         /// Command prefix. I.e. lp, gamemode, fly etc...
         /// </summary>
-        public string? Prefix { get; set; }
+        public string Prefix { get; set; }
         /// <summary>
         /// Arguments for the command in the order to be given.
         /// </summary>

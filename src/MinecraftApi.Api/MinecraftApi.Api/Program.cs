@@ -6,6 +6,11 @@ using MinecraftApi.Ef.Models;
 using MinecraftApi.Api.Extensions;
 using MinecraftApi.Ef.Models.Contexts;
 using MinecraftApi.Ef.Services;
+using MinecraftApi.Api.Services;
+using MinecraftApi.Core.Contracts.Services;
+using MinecraftApi.Rcon.Services;
+using MinecraftApi.Core.Rcon.Contracts.Services;
+using MinecraftApi.Core.Rcon.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +28,12 @@ builder.Services.Configure<DatabaseConfigurationOptions>((options) =>
     options.Password = builder.Configuration["DB_PW"];
     options.DatabaseType = opts.DatabaseType;
 });
+builder.Services.Configure<RconClientServiceOptions>((options) =>
+{
+    options.Host = builder.Configuration["RconHost"];
+    options.Port = int.Parse(builder.Configuration["RconPort"]);
+    options.Password = builder.Configuration["RconPassword"];
+});
 
 //Add the database:
 switch (opts.DatabaseType)
@@ -38,6 +49,9 @@ switch (opts.DatabaseType)
 builder.Services.AddScoped<PluginService>();
 builder.Services.AddScoped<ArgumentService>();
 builder.Services.AddScoped<CommandService>();
+builder.Services.AddScoped<IRconClientService, RconClientService>();
+builder.Services.AddScoped<IRconCommandService, RconCommandService>();
+builder.Services.AddScoped<ICommandExecutionService, CommandExecutionService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

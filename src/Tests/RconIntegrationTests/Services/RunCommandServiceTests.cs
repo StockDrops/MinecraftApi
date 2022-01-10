@@ -17,7 +17,7 @@ namespace RconIntegrationTests.Services
     [TestClass]
     public class RunCommandServiceTests
     {
-        private RunCommandService service;
+        private RconCommandService service;
         private readonly IConfiguration Configuration;
         /// <summary>
         /// Construct
@@ -29,7 +29,7 @@ namespace RconIntegrationTests.Services
             Configuration = builder.Build();
 
             var client = new RconClientService(Configuration["RconHost"], int.Parse(Configuration["RconPort"]), Configuration["RconPassword"]);
-            service = new RunCommandService(client, null);
+            service = new RconCommandService(client, null);
         }
         /// <summary>
         /// 
@@ -41,7 +41,7 @@ namespace RconIntegrationTests.Services
             var tokenSource = new CancellationTokenSource();
             tokenSource.CancelAfter(TimeSpan.FromSeconds(1000));
             CancellationToken cancellationToken = tokenSource.Token;
-            var responses = new List<Task<IRconResponseMessage>>();
+            var responses = new List<Task<IMinecraftResponseMessage>>();
             for(int i = 0; i < 100; i++)
             {
                 responses.Add(TestRunCommand("list", cancellationToken));
@@ -60,7 +60,7 @@ namespace RconIntegrationTests.Services
             }
         }
 
-        private async Task<IRconResponseMessage> TestRunCommand(string command, CancellationToken cancellationToken)
+        private async Task<IMinecraftResponseMessage> TestRunCommand(string command, CancellationToken cancellationToken)
         {
             return await service.RunCommandAsync(command, cancellationToken);
         }

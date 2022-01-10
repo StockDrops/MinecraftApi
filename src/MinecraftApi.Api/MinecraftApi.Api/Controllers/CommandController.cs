@@ -57,16 +57,7 @@ namespace MinecraftApi.Api.Controllers
             await _commandService.SaveAsync(value, value.PluginId);
         }
 
-        /// <summary>
-        /// Runs a raw command. No complex sanity checks will be done here. Just directly forward the command to RCON.
-        /// </summary>
-        /// <param name="command"></param>
-        /// <returns></returns>
-        [HttpPost("run/{command}")]
-        public async Task RunCommandAsync(string command)
-        {
-
-        }
+        
 
         /// PUT api/<CommandController>/5
         [HttpPut("{id}")]

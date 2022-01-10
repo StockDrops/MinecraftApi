@@ -48,7 +48,7 @@ namespace RconUnitTests.Services
             mockedRconClientService.Setup(r => r.IsInitialized).Returns(isInitialized);
 
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-            var runService = new RunCommandService(mockedRconClientService.Object, null);
+            var runService = new RconCommandService(mockedRconClientService.Object, null);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
             var response = await runService.RunCommandAsync("about", cancellationToken);
             mockedRconClientService.Verify(r => r.IsInitialized, Times.Once);

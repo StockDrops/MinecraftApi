@@ -9,7 +9,7 @@ namespace MinecraftApi.Core.Rcon.Contracts.Models
     /// <summary>
     /// A response given by the server.
     /// </summary>
-    public interface IRconResponseMessage
+    public interface IMinecraftResponseMessage
     {
         /// <summary>
         /// The request id of the response

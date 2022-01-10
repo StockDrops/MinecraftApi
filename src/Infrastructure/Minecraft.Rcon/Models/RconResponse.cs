@@ -12,7 +12,7 @@ namespace MinecraftApi.Rcon.Models
     /// <summary>
     /// An implementation of IRconResponseMessage
     /// </summary>
-    public class RconResponseMessage : IRconResponseMessage
+    public class RconResponseMessage : IMinecraftResponseMessage
     {
         ///<inheritdoc/>
         public int RequestId { get; }

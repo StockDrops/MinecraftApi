@@ -24,16 +24,20 @@ namespace MinecraftApi.Core.Rcon.Models
             Password = password;
         }
         /// <summary>
+        /// Empty constructor
+        /// </summary>
+        public RconClientServiceOptions() { Host = ""; Password = ""; }
+        /// <summary>
         /// Host to use with the connection
         /// </summary>
-        public string Host { get; }
+        public string Host { get; set; }
         /// <summary>
         /// Port to use with the connection.
         /// </summary>
-        public int Port { get; }
+        public int Port { get; set; }
         /// <summary>
         /// Password used in the RCON connection.
         /// </summary>
-        public string Password { get; }
+        public string Password { get; set; }
     }
 }

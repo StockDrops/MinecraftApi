@@ -18,13 +18,13 @@ namespace MinecraftApi.Core.Models
         /// <summary>
         /// Default empty argument.
         /// </summary>
-        public Argument() { }
+        public Argument() { Name = ""; }
         /// <inheritdoc/>
-        public string? Name { get; set; }
+        public string Name { get; set; }
         /// <inheritdoc/>
         public string? Description { get; set; }
         /// <inheritdoc/>
-        public int? Order { get; set; }
+        public int Order { get; set; } = 0;
         /// <inheritdoc/>
         public bool Required { get; set; }
 
@@ -51,5 +51,10 @@ namespace MinecraftApi.Core.Models
         /// </summary>
         public long CommandId { get; set; }
         #endregion
+        ///<inheritdoc/>
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }
