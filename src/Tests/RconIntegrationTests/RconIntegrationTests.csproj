@@ -8,6 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
     <PackageReference Include="MSTest.TestAdapter" Version="2.2.7" />
@@ -16,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Core\MinecraftApi.Core.Ef\MinecraftApi.Ef.csproj" />
     <ProjectReference Include="..\..\Core\MinecraftApi.Core.Rcon\MinecraftApi.Core.Rcon.csproj" />
     <ProjectReference Include="..\..\Infrastructure\Minecraft.Rcon\MinecraftApi.Rcon.csproj" />
   </ItemGroup>

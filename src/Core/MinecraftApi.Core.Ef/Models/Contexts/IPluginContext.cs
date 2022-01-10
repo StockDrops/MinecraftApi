@@ -28,6 +28,16 @@ namespace MinecraftApi.Ef.Models
             _databaseConfiguration = databaseConfigurationOptions.Value;
         }
         /// <summary>
+        /// PluginContext for configuring externally
+        /// </summary>
+        /// <param name="options"></param>
+        public PluginContext(DbContextOptions options) : base(options)
+        {
+        }
+
+
+
+        /// <summary>
         /// Plugins for the EF Core base.
         /// </summary>
         public DbSet<Plugin>? Plugins { get; set; }
