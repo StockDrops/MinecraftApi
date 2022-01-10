@@ -2,6 +2,7 @@
 using MinecraftApi.Ef.Services;
 using MinecraftApi.Core.Api.Contracts.Models;
 using MinecraftApi.Core.Models;
+using MinecraftApi.Core.Contracts.Services;
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace MinecraftApi.Api.Controllers
@@ -14,13 +15,13 @@ namespace MinecraftApi.Api.Controllers
     public class CommandController : ControllerBase
     {
         private readonly ILogger<CommandController> _logger;
-        private readonly CommandService _commandService;
+        private readonly ICommandService _commandService;
         /// <summary>
         /// Construct a command controller.
         /// </summary>
         /// <param name="commandService"></param>
         /// <param name="logger"></param>
-        public CommandController(CommandService commandService, ILogger<CommandController> logger)
+        public CommandController(ICommandService commandService, ILogger<CommandController> logger)
         {
             _logger = logger;
             _commandService = commandService;
