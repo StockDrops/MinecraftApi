@@ -119,13 +119,9 @@ public class PatreonService : IPatreonService
             throw new LinkRequestNotFound();
 
         var codeResponse = await GetAuthTokenAsync(code, token);
-        //TODO: what if the linked player already exists?
-        var linkedPlayer = new LinkedPlayer
-        {
-            ExternalId = azureId,
-            PlayerId = request.PlayerId
-        };
-        var createdLinkedPlayer = await linkedPlayerRepositoryService.CreateAsync(linkedPlayer);
+        //
+        var createdLinkedPlayer = await LinkPlayerAsync(uniqueRequestId, azureId, false, token);
+
         var dbToken = codeResponse.ToToken(createdLinkedPlayer.Id);
         context.Tokens.Add(dbToken);
         //set the request as completed
@@ -133,6 +129,41 @@ public class PatreonService : IPatreonService
 
         await context.SaveChangesAsync();
         return true;
+    }
+    /// <summary>
+    /// Links a minecraft player to an external id.
+    /// </summary>
+    /// <param name="uniqueRequestId"></param>
+    /// <param name="externalId"></param>
+    /// <param name="setRequestAsCompleted"></param>
+    /// <param name="token"></param>
+    /// <returns></returns>
+    /// <exception cref="LinkRequestNotFound"></exception>
+    public async Task<LinkedPlayer> LinkPlayerAsync(string uniqueRequestId, string externalId, bool setRequestAsCompleted = true, CancellationToken token = default)
+    {
+        using var context = dbContextFactory.CreateDbContext();
+
+        var request = await context.LinkRequests.FirstOrDefaultAsync(r => r.UniqueId == uniqueRequestId, token);
+
+        if (request == null)
+            throw new LinkRequestNotFound();
+        if (request.Status == LinkRequestStatus.Completed)
+            throw new LinkRequestNotFound();
+
+        //TODO: what if the linked player already exists?
+        var linkedPlayer = new LinkedPlayer
+        {
+            ExternalId = externalId,
+            PlayerId = request.PlayerId
+        };
+        var createdLinkedPlayer = await linkedPlayerRepositoryService.CreateAsync(linkedPlayer);
+
+        //set the request as completed
+        if(setRequestAsCompleted)
+            request.Status = LinkRequestStatus.Completed;
+
+        await context.SaveChangesAsync();
+        return createdLinkedPlayer;
     }
     /// <summary>
     /// 

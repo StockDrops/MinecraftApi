@@ -19,14 +19,20 @@ using MinecraftApi.Core.Services.Patreon;
 using Microsoft.Extensions.DependencyInjection;
 using MinecraftApi.Core.Models.Minecraft.Players;
 using MinecraftApi.Core.Models;
+using Microsoft.OpenApi.Models;
+using System.Reflection;
+using MinecraftApi.Core.Models.Configuration;
+using OpenStockApi.Core.Models.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
+                .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"),
+                                            jwtBearerScheme: JwtBearerDefaults.AuthenticationScheme);
 // load the database options
 var opts = builder.Configuration.GetSection(nameof(DatabaseConfigurationOptions)).Get<DatabaseConfigurationOptions>();
+var azureConfiguration = builder.Configuration.GetSection("AzureAdSwagger").Get<AzureConfiguration>();
 // replace the password with the real password stored in secrets
 opts.ConnectionString = opts.ConnectionString.Replace("[DB_PW]", builder.Configuration["DB_PW"]);
 
@@ -60,7 +66,7 @@ builder.Services.AddDbContextFactory<PluginContext, PluginContextFactory>();
 if (builder.Environment.IsDevelopment())
 {
     //allow anonymous requests for debugging:
-    builder.Services.AddSingleton<IAuthorizationHandler, AllowAnonymousHandler>();
+    //builder.Services.AddSingleton<IAuthorizationHandler, AllowAnonymousHandler>();
 }
 #endif
 
@@ -83,7 +89,121 @@ builder.Services.AddScoped<IPatreonService, PatreonService>();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    //c.AddSecurityDefinition("oauth2-ad", new OpenApiSecurityScheme
+    //{
+    //    Type = SecuritySchemeType.OAuth2,
+    //    Flows = new OpenApiOAuthFlows()
+    //    {
+    //        Implicit = new OpenApiOAuthFlow()
+    //        {
+
+    //            AuthorizationUrl = new Uri($"https://login.microsoftonline.com/{azureConfiguration.TenantId}/oauth2/v2.0/authorize"),
+    //            TokenUrl = new Uri($"https://login.microsoftonline.com/{azureConfiguration.TenantId}/oauth2/v2.0/token"),
+    //            Scopes = new Dictionary<string, string>
+    //            {
+    //                {
+    //                    azureConfiguration.ApiScopeRoot + ApiScopes.Read,
+    //                    "Allows for reading from the api."
+    //                },
+    //                {
+    //                    azureConfiguration.ApiScopeRoot + ApiScopes.Write,
+    //                    "Write data to the server."
+    //                },
+    //                {
+    //                    azureConfiguration.ApiScopeRoot + ApiScopes.Update,
+    //                    "Update existing data"
+    //                },
+    //                {
+    //                    azureConfiguration.ApiScopeRoot + ApiScopes.Delete,
+    //                    "Deletes data from the server"
+    //                }
+    //            }
+
+    //        }
+    //    }
+    //});
+    c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+    {
+        Type = SecuritySchemeType.OAuth2,
+        Flows = new OpenApiOAuthFlows()
+        {
+            Implicit = new OpenApiOAuthFlow()
+            {
+
+                AuthorizationUrl = new Uri($"{azureConfiguration.Instance}{azureConfiguration.TenantId}/oauth2/v2.0/authorize"),
+                TokenUrl = new Uri($"{azureConfiguration.Instance}{azureConfiguration.TenantId}/oauth2/v2.0/token"),
+                Scopes = new Dictionary<string, string>
+                    {
+                        {
+                            azureConfiguration.ApiScopeRoot + ApiScopes.Read,
+                            "Allows for reading from the api."
+                        },
+                        {
+                            azureConfiguration.ApiScopeRoot + ApiScopes.Write,
+                            "Write data to the server."
+                        },
+                        {
+                            azureConfiguration.ApiScopeRoot + ApiScopes.Update,
+                            "Update existing data"
+                        },
+                        {
+                            azureConfiguration.ApiScopeRoot + ApiScopes.Delete,
+                            "Deletes data from the server"
+                        }
+                    }
+
+            }
+        }
+    });
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement() {
+            {
+                new OpenApiSecurityScheme {
+                    Reference = new OpenApiReference {
+                            Type = ReferenceType.SecurityScheme,
+                                Id = "oauth2"
+                        },
+                        Scheme = "oauth2",
+                        Name = "oauth2",
+                        In = ParameterLocation.Header
+                },
+                new List <string>()
+            }
+        });
+    //c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    //{
+    //    In = ParameterLocation.Header,
+    //    Description = "Please enter token",
+    //    Name = "Authorization",
+    //    Type = SecuritySchemeType.Http,
+    //    BearerFormat = "JWT",
+    //    Scheme = "bearer"
+    //});
+    //c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    //{
+    //    {
+    //        new OpenApiSecurityScheme
+    //        {
+    //            Reference = new OpenApiReference
+    //            {
+    //                Type=ReferenceType.SecurityScheme,
+    //                Id="Bearer"
+    //            }
+    //        },
+    //        new string[]{}
+    //    }
+    //}
+
+
+    // );
+
+    // Set the comments path for the Swagger JSON and UI.
+
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    c.IncludeXmlComments(xmlPath);
+});
 
 //migrate the database:
 
@@ -93,7 +213,15 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+
+        //var manifestFile = Assembly.GetExecutingAssembly().GetManifestResourceNames().First(mn => mn.ToLowerInvariant().Contains("swagger"));
+        //c.IndexStream = () => Assembly.GetExecutingAssembly().GetManifestResourceStream(manifestFile);
+        c.OAuthClientId(azureConfiguration.ClientId);
+        c.OAuthUseBasicAuthenticationWithAccessCodeGrant();
+
+    });
 }
 
 app.UseHttpsRedirection();

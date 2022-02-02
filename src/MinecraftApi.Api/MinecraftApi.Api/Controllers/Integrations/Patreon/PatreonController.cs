@@ -28,6 +28,7 @@ namespace MinecraftApi.Api.Controllers.Integrations.Patreon
         /// <returns></returns>
         /// 
         [HttpPost("link")]
+        [Authorize]
         public async Task<ActionResult<LinkRequest>> CreateLinkRequestMinecraft([FromBody] MinecraftPlayer player, CancellationToken token = default)
         {
             try
@@ -50,12 +51,22 @@ namespace MinecraftApi.Api.Controllers.Integrations.Patreon
         /// 
         [HttpPost("verify")]
         [Authorize]
-        public async Task<ActionResult<LinkResponse>> VerifyLinkRequest([FromQuery] string code, [FromQuery] string requestId, [FromQuery] string externalId)
+        public async Task<ActionResult<LinkResponse>> VerifyLinkRequest([FromQuery] string requestId, [FromQuery] string externalId, [FromQuery] string? code = null)
         {
             var response = new LinkResponse();
             try
             {
-                response.IsSuccess = await patreonService.VerifyCodeAsync(code, requestId, externalId);
+                if(code != null)
+                    response.IsSuccess = await patreonService.VerifyCodeAsync(code, requestId, externalId);
+                else
+                {
+                    var linkedPlayer = await patreonService.LinkPlayerAsync(requestId, externalId);
+                    if (linkedPlayer != null)
+                        response.IsSuccess = true;
+                    else
+                        Problem("Linking failed");
+                }
+                    
             }
             catch (Exception ex)
             {
