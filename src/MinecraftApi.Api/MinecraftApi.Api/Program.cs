@@ -11,6 +11,14 @@ using MinecraftApi.Core.Contracts.Services;
 using MinecraftApi.Rcon.Services;
 using MinecraftApi.Core.Rcon.Contracts.Services;
 using MinecraftApi.Core.Rcon.Models;
+using Microsoft.AspNetCore.Authorization;
+using MinecraftApi.Api.Handlers;
+using MinecraftApi.Integrations.Contracts.Patreon;
+using MinecraftApi.Integrations.Patreon;
+using MinecraftApi.Core.Services.Patreon;
+using Microsoft.Extensions.DependencyInjection;
+using MinecraftApi.Core.Models.Minecraft.Players;
+using MinecraftApi.Core.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,6 +46,7 @@ builder.Services.Configure<RconClientServiceOptions>((options) =>
 //Add the database:
 switch (opts.DatabaseType)
 {
+
     case DatabaseType.SqlServer:
         builder.Services.AddDbContext<PluginContext, SqlContext>();
         break;
@@ -45,6 +54,17 @@ switch (opts.DatabaseType)
         builder.Services.AddDbContext<PluginContext, MySqlContext>();
         break;
 }
+builder.Services.AddDbContextFactory<PluginContext, PluginContextFactory>();
+
+#if DEBUG
+if (builder.Environment.IsDevelopment())
+{
+    //allow anonymous requests for debugging:
+    builder.Services.AddSingleton<IAuthorizationHandler, AllowAnonymousHandler>();
+}
+#endif
+
+builder.Services.AddHttpClient();
 
 builder.Services.AddScoped<PluginService>();
 builder.Services.AddScoped<ArgumentService>();
@@ -52,6 +72,13 @@ builder.Services.AddScoped<ICommandService, CommandService>();
 builder.Services.AddScoped<IRconClientService, RconClientService>();
 builder.Services.AddScoped<IRconCommandService, RconCommandService>();
 builder.Services.AddScoped<ICommandExecutionService, CommandExecutionService>();
+
+
+
+builder.Services.AddScoped<IRepositoryService<MinecraftPlayer, string>, CrudService<PluginContext, MinecraftPlayer, string>>();
+builder.Services.AddScoped<IRepositoryService<LinkedPlayer>, CrudService<PluginContext, LinkedPlayer>>();
+builder.Services.Configure<PatreonServiceOptions>(builder.Configuration.GetSection(nameof(PatreonServiceOptions)));
+builder.Services.AddScoped<IPatreonService, PatreonService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -78,5 +105,6 @@ app.MapControllers();
 
 //Migrate the database //TODO: make this optional in case the user prefers to manage it themselves.
 app.MigrateDatabase<PluginContext>();
-app.SeedData<PluginContext>();
+if(app.Environment.IsDevelopment())
+    app.SeedData<PluginContext>();
 app.Run();

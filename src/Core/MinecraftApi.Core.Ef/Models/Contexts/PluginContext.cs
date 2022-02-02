@@ -2,6 +2,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using MinecraftApi.Core.Models;
+using MinecraftApi.Core.Models.Integrations;
+using MinecraftApi.Core.Models.Minecraft.Players;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,6 +51,23 @@ namespace MinecraftApi.Ef.Models
         /// Arguments to store in the database
         /// </summary>
         public DbSet<Argument>? Arguments { get; set; }
+        /// <summary>
+        /// Players set
+        /// </summary>
+        public DbSet<MinecraftPlayer> MinecraftPlayers => Set<MinecraftPlayer>();
+        /// <summary>
+        /// Link requests.
+        /// </summary>
+        public DbSet<LinkRequest> LinkRequests => Set<LinkRequest>();
+        /// <summary>
+        /// The OAUTH2 tokens saved.
+        /// </summary>
+        public DbSet<Token> Tokens => Set<Token>();
+        /// <summary>
+        /// The linked players (MC + External Id).
+        /// </summary>
+        public DbSet<LinkedPlayer> LinkedPlayers => Set<LinkedPlayer>();
+
 
         /// <inheritdoc/>
         /// All the configuration is done here to avoid the models from having attributes depending on EF Core. I want the models to be POCO as much as possible.
@@ -58,6 +77,9 @@ namespace MinecraftApi.Ef.Models
             modelBuilder.Entity<Plugin>()
                 .HasIndex(p => p.Name)
                 .IsUnique();
+            modelBuilder.Entity<MinecraftPlayer>()
+                .HasKey(p => p.Id);
+
         }
     }
 }

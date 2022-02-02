@@ -17,7 +17,6 @@
 
   <ItemGroup>
     <Folder Include="Contracts\Models\" />
-    <Folder Include="Services\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,6 +24,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Bucket4Csharp.Core" Version="0.1.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0" />
   </ItemGroup>
 
