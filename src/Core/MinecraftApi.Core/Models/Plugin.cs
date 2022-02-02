@@ -13,7 +13,7 @@ namespace MinecraftApi.Core.Models
     /// Plugin base class.
     /// </summary>
     /// 
-    public class Plugin : IPlugin<Command, Argument> 
+    public class Plugin : IPlugin<Command, Argument>, IEntity 
     {
         /// <inheritdoc/>
         public long Id { get; set; }

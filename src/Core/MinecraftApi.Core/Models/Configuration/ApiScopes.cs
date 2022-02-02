@@ -27,5 +27,9 @@ namespace OpenStockApi.Core.Models.Configuration
         /// Allows updating.
         /// </summary>
         public const string Update = "update";
+        /// <summary>
+        /// Allows you to run commands.
+        /// </summary>
+        public const string Run = "run";
     }
 }

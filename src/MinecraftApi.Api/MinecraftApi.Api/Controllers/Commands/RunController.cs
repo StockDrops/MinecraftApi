@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Web.Resource;
 using MinecraftApi.Core.Api.Contracts.Models;
 using MinecraftApi.Core.Contracts.Services;
 using MinecraftApi.Core.Models;
 using MinecraftApi.Core.Rcon.Contracts.Models;
+using OpenStockApi.Core.Models.Configuration;
 
 namespace MinecraftApi.Api.Controllers
 {
@@ -12,6 +15,8 @@ namespace MinecraftApi.Api.Controllers
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
+    [RequiredScope(ApiScopes.Run)]
     public class RunController : ControllerBase
     {
         private readonly ICommandExecutionService _commandExecutionService;

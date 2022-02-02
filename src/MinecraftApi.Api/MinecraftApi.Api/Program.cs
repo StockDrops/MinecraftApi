@@ -30,6 +30,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"),
                                             jwtBearerScheme: JwtBearerDefaults.AuthenticationScheme);
+builder.Services.AddAuthorization(options => options.FallbackPolicy = new AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser()
+                .Build());
 // load the database options
 var opts = builder.Configuration.GetSection(nameof(DatabaseConfigurationOptions)).Get<DatabaseConfigurationOptions>();
 var azureConfiguration = builder.Configuration.GetSection("AzureAdSwagger").Get<AzureConfiguration>();
@@ -83,6 +86,9 @@ builder.Services.AddScoped<ICommandExecutionService, CommandExecutionService>();
 
 builder.Services.AddScoped<IRepositoryService<MinecraftPlayer, string>, CrudService<PluginContext, MinecraftPlayer, string>>();
 builder.Services.AddScoped<IRepositoryService<LinkedPlayer>, CrudService<PluginContext, LinkedPlayer>>();
+builder.Services.AddScoped<IRepositoryService<Command>, CrudService<PluginContext, Command>>();
+builder.Services.AddScoped<IRepositoryService<Plugin>, CrudService<PluginContext, Plugin>>();
+
 builder.Services.Configure<PatreonServiceOptions>(builder.Configuration.GetSection(nameof(PatreonServiceOptions)));
 builder.Services.AddScoped<IPatreonService, PatreonService>();
 
@@ -151,6 +157,10 @@ builder.Services.AddSwaggerGen(c =>
                         {
                             azureConfiguration.ApiScopeRoot + ApiScopes.Delete,
                             "Deletes data from the server"
+                        },
+                        {
+                            azureConfiguration.ApiScopeRoot + ApiScopes.Run,
+                            "Run commands on minecraft"
                         }
                     }
 
