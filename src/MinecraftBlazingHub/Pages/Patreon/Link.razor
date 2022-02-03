@@ -1,0 +1,66 @@
+﻿@page "/link/patreon"
+@using MinecraftBlazingHub.Services.Integrations
+
+@inject IPatreonService PatreonService
+@using Radzen.Blazor
+<h3>Link</h3>
+@if (string.IsNullOrEmpty(Code))
+{
+    @if (string.IsNullOrEmpty(RequestId))
+    {
+        //the request id is null so let's show some instructions
+
+    }
+    else
+    {
+        <div>
+            <div>
+                <RadzenButton Text="Connect With Patreon" Click=@(args => OnClick(SupportedIntegrations.Patreon))/>
+            </div>
+            <div>
+                <RadzenButton Text="Connect to Legacy Subscriptions (my.stockdrops.net)" Click=@(args => OnClick(SupportedIntegrations.Legacy)) />
+            </div>
+        </div>
+    }
+}
+else //the code is not null and we should call the api to verify.
+{
+    
+}
+
+
+@code {
+
+    public bool IsComplete = false;
+
+
+    int value = 2;
+
+    void OnChange(int value)
+    {
+        Console.WriteLine($"Value changed to {value}");
+    }
+    void OnClick(SupportedIntegrations integration)
+    {
+        if(integration == SupportedIntegrations.Patreon)
+        {
+            PatreonService.RedirectUserToOauth2(RequestId);
+        }
+
+    }
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+        PatreonService.
+    }
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string? Code { get; set; }
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string RequestId { get; set; }
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string? State { get; set; }
+}

@@ -53,7 +53,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiIntegrationTests", "..\A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MinecraftBlazingHub", "src\MinecraftBlazingHub\MinecraftBlazingHub.csproj", "{3E0381FE-1DF0-4355-80E0-CE77267134DB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinecraftApi.Integrations", "src\Infrastructure\MinecraftApi.Integrations\MinecraftApi.Integrations.csproj", "{21BFCB26-FEDA-48C1-964C-C62FB3F4017F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MinecraftApi.Integrations", "src\Infrastructure\MinecraftApi.Integrations\MinecraftApi.Integrations.csproj", "{21BFCB26-FEDA-48C1-964C-C62FB3F4017F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

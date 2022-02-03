@@ -6,13 +6,20 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
+using MinecraftApi.Core.Services.Patreon;
 using MinecraftBlazingHub.Data;
+using MinecraftBlazingHub.Services.Integrations;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.Configure<PatreonServiceOptions>(builder.Configuration.GetSection(nameof(PatreonServiceOptions)));
+builder.Services.AddTransient<IPatreonService, PatreonService>();
+
+
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-    .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAd"));
+    .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAdB2C"));
+
 builder.Services.AddControllersWithViews()
     .AddMicrosoftIdentityUI();
 

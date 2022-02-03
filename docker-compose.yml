@@ -10,6 +10,13 @@ services:
         - DB_PW
     depends_on:
         - db
+  minecraftapi.hub:
+    image: ${DOCKER_REGISTRY-}minecraftapihub
+    build:
+      context: .
+      dockerfile: src/MinecraftBlazingHub/Dockerfile
+    depends_on:
+        - minecraftapi.api
   db:
     image: mcr.microsoft.com/mssql/server
     user: root

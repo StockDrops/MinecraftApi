@@ -19,13 +19,14 @@ namespace MinecraftApi.Core.Services.Patreon
         /// <param name="redirectUrl"></param>
         /// <param name="codeAuthorizationEndpoint"></param>
         /// <exception cref="ArgumentNullException"></exception>
-        public PatreonServiceOptions(string clientId, string clientSecret, string redirectUrl, string requestUrl, string codeAuthorizationEndpoint)
+        public PatreonServiceOptions(string clientId, string clientSecret, string redirectUrl, string requestUrl, string codeAuthorizationEndpoint, string scope = "identity")
         {
             ClientId = clientId ?? throw new ArgumentNullException(nameof(clientId));
             ClientSecret = clientSecret ?? throw new ArgumentNullException(nameof(clientSecret));
             RedirectUrl = redirectUrl ?? throw new ArgumentNullException(nameof(redirectUrl));
             CodeAuthorizationEndpoint = codeAuthorizationEndpoint ?? throw new ArgumentNullException(nameof(codeAuthorizationEndpoint));
             RequestUrl = requestUrl ?? throw new ArgumentNullException(nameof(requestUrl));
+            Scope = scope;
         }
         /// <summary>
         /// Default constructor to avoid. only for automated frameworks.
@@ -52,5 +53,6 @@ namespace MinecraftApi.Core.Services.Patreon
         /// Url where to send the user to login with an external provider. Patreon should only be used as a "connect to" not a "login with". The request url should preserve the state query parameter.
         /// </summary>
         public string RequestUrl { get; set; } = null!;
+        public string Scope { get; set; } = "identity";
     }
 }
