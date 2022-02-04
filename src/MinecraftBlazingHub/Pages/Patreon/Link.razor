@@ -99,24 +99,7 @@
     private async Task LinkLegacyAccountAsync(string requestId)
     {
         var userId = await GetUserIdAsync();
-        try
-        {
-            var player = await PatreonService.LinkPlayerAsync(requestId, userId);
-            if(player != null && player.ExternalId != null)
-            {
-                var subscription = await LegacyApiService.GetSubscription(player.ExternalId);
-                if(subscription != null && subscription.Name != null)
-                {
-                    await PlayerLinkingService.LinkPlayer(userId, player.Id, subscription.Name);
-                }
-                Success = true;
-            }
-        }
-        catch (LinkRequestNotFound)
-        {
-            Message = "The linking request has either expired, doesn't exist, or has already being used. Please create a new one on the Minecraft server.";
-            Success = false;
-        }
+        (Success, Message) = await PlayerLinkingService.LinkLegacyAccountAsync(requestId, userId);
     }
 
     private async Task<string> GetUserIdAsync()

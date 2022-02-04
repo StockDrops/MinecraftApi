@@ -149,7 +149,10 @@ public class PatreonService : IPatreonService
             throw new LinkRequestNotFound();
         if (request.Status == LinkRequestStatus.Completed)
             throw new LinkRequestNotFound();
-
+#if RELEASE
+        if(request.ExpirationTime < DateTime.UtcNow)
+            throw new LinkRequestNotFound();
+#endif
         //TODO: what if the linked player already exists?
         var linkedPlayer = new LinkedPlayer
         {
