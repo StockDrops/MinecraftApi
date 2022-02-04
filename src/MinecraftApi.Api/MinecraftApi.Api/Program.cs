@@ -6,7 +6,6 @@ using MinecraftApi.Ef.Models;
 using MinecraftApi.Api.Extensions;
 using MinecraftApi.Ef.Models.Contexts;
 using MinecraftApi.Ef.Services;
-using MinecraftApi.Api.Services;
 using MinecraftApi.Core.Contracts.Services;
 using MinecraftApi.Rcon.Services;
 using MinecraftApi.Core.Rcon.Contracts.Services;
@@ -24,6 +23,7 @@ using System.Reflection;
 using MinecraftApi.Core.Models.Configuration;
 using OpenStockApi.Core.Models.Configuration;
 using MinecraftApi.Core.Models.Commands;
+using MinecraftApi.Core.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

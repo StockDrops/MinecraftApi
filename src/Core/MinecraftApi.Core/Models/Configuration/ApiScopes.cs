@@ -31,5 +31,9 @@ namespace OpenStockApi.Core.Models.Configuration
         /// Allows you to run commands.
         /// </summary>
         public const string Run = "run";
+        /// <summary>
+        /// Allows linking of roles.
+        /// </summary>
+        public const string LinkAsUser = "linkasuser";
     }
 }

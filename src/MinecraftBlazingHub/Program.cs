@@ -9,12 +9,18 @@ using Microsoft.Identity.Web.UI;
 using MinecraftApi.Core.Contracts.Services;
 using MinecraftApi.Core.Extensions;
 using MinecraftApi.Core.Models;
+using MinecraftApi.Core.Models.Commands;
 using MinecraftApi.Core.Models.Minecraft.Players;
+using MinecraftApi.Core.Rcon.Contracts.Services;
+using MinecraftApi.Core.Rcon.Models;
+using MinecraftApi.Core.Services;
 using MinecraftApi.Core.Services.Patreon;
 using MinecraftApi.Ef.Models;
 using MinecraftApi.Ef.Models.Contexts;
 using MinecraftApi.Ef.Services;
 using MinecraftApi.Integrations.Models.Legacy;
+using MinecraftApi.Integrations.Services;
+using MinecraftApi.Rcon.Services;
 using MinecraftBlazingHub.Data;
 using MinecraftBlazingHub.Services.Integrations;
 using Radzen;
@@ -25,6 +31,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.Configure<PatreonServiceOptions>(builder.Configuration.GetSection(nameof(PatreonServiceOptions)));
 builder.Services.AddTransient<IBlazorPatreonService, BlazorPatreonService>();
+builder.Services.AddTransient<PlayerLinkingService>();
 
 var certificate = new X509Certificate2(builder.Configuration["CertificatePath"], builder.Configuration["CertificatePassword"]);
 
@@ -39,6 +46,7 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAdB2C"))
     .EnableTokenAcquisitionToCallDownstreamApi()
     .AddDownstreamWebApi("LegacyApi", builder.Configuration.GetSection("LegacyApi"))
+    
             .AddInMemoryTokenCaches();
 
 builder.Services.AddControllersWithViews()
@@ -85,6 +93,21 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor()
     .AddMicrosoftIdentityConsentHandler();
 builder.Services.AddSingleton<WeatherForecastService>();
+
+//RCON
+builder.Services.Configure<RconClientServiceOptions>((options) =>
+{
+    options.Host = builder.Configuration["RconHost"];
+    options.Port = int.Parse(builder.Configuration["RconPort"]);
+    options.Password = builder.Configuration["RconPassword"];
+});
+
+builder.Services.AddTransient<IRepositoryService<BaseRanCommand>, CrudService<PluginContext, BaseRanCommand>>();
+builder.Services.AddTransient<IRepositoryService<RanCommand>, CrudService<PluginContext, RanCommand>>();
+builder.Services.AddTransient<ICommandService, CommandService>();
+builder.Services.AddTransient<IRconCommandService, RconCommandService>();
+builder.Services.AddTransient<IRconClientService, RconClientService>();
+builder.Services.AddTransient<ICommandExecutionService, CommandExecutionService>();
 
 var app = builder.Build();
 
