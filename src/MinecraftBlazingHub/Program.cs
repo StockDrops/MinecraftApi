@@ -18,6 +18,7 @@ using MinecraftApi.Core.Services.Patreon;
 using MinecraftApi.Ef.Models;
 using MinecraftApi.Ef.Models.Contexts;
 using MinecraftApi.Ef.Services;
+using MinecraftApi.Integrations.Contracts.Patreon;
 using MinecraftApi.Integrations.Models.Legacy;
 using MinecraftApi.Integrations.Services;
 using MinecraftApi.Rcon.Services;
@@ -31,6 +32,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.Configure<PatreonServiceOptions>(builder.Configuration.GetSection(nameof(PatreonServiceOptions)));
 builder.Services.AddTransient<IBlazorPatreonService, BlazorPatreonService>();
+builder.Services.AddTransient<IPatreonService>(services => services.GetRequiredService<IBlazorPatreonService>());
+
 builder.Services.AddTransient<PlayerLinkingService>();
 
 var certificate = new X509Certificate2(builder.Configuration["CertificatePath"], builder.Configuration["CertificatePassword"]);

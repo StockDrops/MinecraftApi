@@ -100,7 +100,7 @@ public class PatreonService : IPatreonService
     /// <param name="code"></param>
     /// <param name="token"></param>
     /// <returns></returns>
-    public async Task<bool> VerifyCodeAsync(string code, string uniqueRequestId, string azureId, CancellationToken token = default)
+    public async Task<LinkedPlayer> VerifyCodeAsync(string code, string uniqueRequestId, string azureId, CancellationToken token = default)
     {
         if (string.IsNullOrEmpty(code))
             throw new ArgumentNullException(nameof(code));
@@ -128,7 +128,40 @@ public class PatreonService : IPatreonService
         request.Status = LinkRequestStatus.Completed;
 
         await context.SaveChangesAsync();
-        return true;
+        return createdLinkedPlayer;
+    }
+    ///<inheritdoc/>
+    public async Task<Role?> GetTiersAsync(long linkedPlayerId, CancellationToken token = default)
+    {
+        using var context = dbContextFactory.CreateDbContext();
+        var accessToken = await context.Tokens.Where(t => t.LinkedPlayerId == linkedPlayerId).Include(t => t.LinkedPlayer).FirstOrDefaultAsync(token);
+        if(accessToken == null)
+            throw new ArgumentOutOfRangeException(nameof(accessToken));
+        var httpRequest = new HttpRequestMessage(HttpMethod.Get, "https://www.patreon.com/api/oauth2/v2/identity?include=memberships,memberships.currently_entitled_tiers&fields%5Bmember%5D=patron_status&fields%5Btier%5D=url,title");
+        httpRequest.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken.AccessToken);
+
+        var response = await client.SendAsync(httpRequest);
+        if (response.IsSuccessStatusCode)
+        {
+            //read it
+            var identity = await response.Content.ReadFromJsonAsync<IdentityResponse>(cancellationToken: token);
+            if(identity != null)
+            {
+                var groupedInclusions =  identity.Included.GroupBy(i => i.Type).ToDictionary(g => g.Key);
+                
+                if(groupedInclusions.TryGetValue("member", out var group))
+                {
+                    var roles = await context.Roles.AsNoTracking().ToListAsync();
+
+                    //gets the role associated with the tier id found in the relationships.
+                    var roleToAward = group.Where(g => g.Relationships.CurrentlyEntitledTiers.Data.Select(d => d.Id).Where(id => roles.Select(r => r.TierId).Contains(int.Parse(id))).Any())
+                        .Select(g => roles.Where( r => g.Relationships.CurrentlyEntitledTiers.Data.Select(d => d.Id).Contains(r.TierId.ToString())).FirstOrDefault()).FirstOrDefault();
+                    return roleToAward;
+                }
+            }
+        }
+        return null;
+
     }
     /// <summary>
     /// Links a minecraft player to an external id.

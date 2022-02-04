@@ -57,7 +57,11 @@ namespace MinecraftApi.Api.Controllers.Integrations.Patreon
             try
             {
                 if(code != null)
-                    response.IsSuccess = await patreonService.VerifyCodeAsync(code, requestId, externalId);
+                {
+                    var player = await patreonService.VerifyCodeAsync(code, requestId, externalId);
+                    if(player != null)
+                        response.IsSuccess = true;
+                }
                 else
                 {
                     var linkedPlayer = await patreonService.LinkPlayerAsync(requestId, externalId);

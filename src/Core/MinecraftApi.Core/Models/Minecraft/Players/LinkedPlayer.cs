@@ -14,13 +14,13 @@ namespace MinecraftApi.Core.Models.Minecraft.Players
     public class LinkedPlayer : IEntity
     {
         ///<inheritdoc/>
-        public long Id { get; set; }    
+        public long Id { get; set; }
         /// <summary>
         /// MC player id
         /// </summary>
         /// 
         [Required]
-        public string? PlayerId { get; set; }
+        public string PlayerId { get; set; } = null!;
         /// <summary>
         /// MC Player
         /// </summary>

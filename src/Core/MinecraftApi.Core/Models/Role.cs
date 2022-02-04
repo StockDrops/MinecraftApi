@@ -19,9 +19,9 @@ namespace MinecraftApi.Core.Models
         /// </summary>
         public RoleLevel Level { get; set; }
         /// <summary>
-        /// The tier Url as defined in the Patreon API. We used this as an id for patreon since they don't have an id on these. Hopefully they won't change.
+        /// The tier id
         /// </summary>
-        public string? TierUrl { get; set; }
+        public long? TierId { get; set; }
 
     }
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member

@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MinecraftApi.Core.Contracts.Services;
 using MinecraftApi.Core.Models;
+using MinecraftApi.Core.Models.Minecraft.Players;
+using MinecraftApi.Core.Services.Builders;
 using MinecraftApi.Ef.Models;
 using MinecraftApi.Integrations.Contracts.Patreon;
 using MinecraftApi.Integrations.Models.Legacy;
@@ -30,10 +32,56 @@ namespace MinecraftApi.Integrations.Services
             this.legacyApiService = legacyApiService;
         }
 
-
-        public async Task<(bool success, string message)> LinkPatreonAccountAsync(string requestId, string userId)
+        /// <summary>
+        /// Links a patreon account to a role in minecraft.
+        /// </summary>
+        /// <param name="requestId"></param>
+        /// <param name="userId"></param>
+        /// <param name="code"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public async Task<(bool success, string message)> LinkPatreonAccountAsync(string requestId, string userId, string code)
         {
+            if(string.IsNullOrEmpty(requestId))
+                throw new ArgumentNullException(nameof(requestId));
+            if(string.IsNullOrEmpty(userId))
+                throw new ArgumentNullException(nameof(userId));
+            if(string.IsNullOrEmpty(code))
+                throw new ArgumentNullException(nameof(code));
+            var message = string.Empty;
+            var success = false;
 
+            try
+            {
+                var linkedPlayer = await patreonService.VerifyCodeAsync(code, requestId, userId);
+                var role = await patreonService.GetTiersAsync(linkedPlayer.Id);
+                if(role != null)
+                {
+                    if(await AwardRoleAsync(userId, linkedPlayer, role))
+                    {
+                        using var context = pluginContextFactory.CreateDbContext();
+                        success = true;
+                        var player = context.MinecraftPlayers.Where(p => p.Id == linkedPlayer.PlayerId).FirstOrDefault();
+                        if(player != null)
+                        {
+                            message = $"{role.Level} was awarded succesfully to {player.PlayerName}";
+                            return (success, message);
+                        }
+                    }
+                    message = "Failed to award role.";
+                    return (success, message);
+                }
+                message = "Couldn't find role to award";
+            }
+            catch (LinkRequestNotFound ex)
+            {
+                message = ex.Message;
+                success = false;
+            }
+                        
+                    
+                
+            return (success, message);
         }
 
         /// <summary>
@@ -54,7 +102,15 @@ namespace MinecraftApi.Integrations.Services
                     var subscription = await legacyApiService.GetSubscription(player.ExternalId);
                     if (subscription != null && subscription.Name != null)
                     {
-                        await LinkPlayer(userId, player.Id, subscription.Name);
+                        if(await LinkPlayer(userId, player.Id, subscription.Name))
+                        {
+                            using var context = pluginContextFactory.CreateDbContext();
+                            success = true;
+                            var mcplayer = context.MinecraftPlayers.Where(p => p.Id == player.PlayerId).FirstOrDefault();
+                            if(mcplayer != null)
+                                message = $"{subscription.Name} was awarded succesfully to {mcplayer.PlayerName}";
+                            return (success, message);
+                        }
                     }
                     success = true;
                 }
@@ -67,9 +123,38 @@ namespace MinecraftApi.Integrations.Services
             return (success, message);
         }
 
+        private async Task<bool> AwardRoleAsync(string userId, LinkedPlayer player, Role role)
+        {
+            using var pluginContext = pluginContextFactory.CreateDbContext();
+            if (userId != player.ExternalId)
+                throw new InvalidOperationException("You can only award a role to the same player/user id as yours");
 
+            var command = new CommandBuilder()
+                .SetPrefix("lp users")
+                .AddArgument(player.PlayerId)
+                .AddArgument("parent")
+                .AddArgument("add")
+                .AddArgument(role.Level.ToString())
+                .Build();
 
-        private async Task LinkPlayer(string userId, long linkedPlayerId, string role)
+            var response = await commandExecutionService.ExecuteAsync(command, userId);
+            if (response.IsSuccess)
+            {
+                var linkedPlayerRole = new LinkedPlayerRole
+                {
+                    AssignedOn = DateTime.UtcNow,
+                    CheckRoleBy = DateTime.UtcNow.AddDays(15),
+                    LinkedPlayerId = player.Id,
+                    RoleId = role.Id
+                };
+                pluginContext.LinkedPlayerRoles.Add(linkedPlayerRole);
+                await pluginContext.SaveChangesAsync();
+                return true;
+            }
+            return false;
+        }
+
+        private async Task<bool> LinkPlayer(string userId, long linkedPlayerId, string role)
         {
             using var pluginContext = pluginContextFactory.CreateDbContext();
             var linkedPlayer = await pluginContext.LinkedPlayers.Include(l => l.Player).FirstOrDefaultAsync(l => l.Id == linkedPlayerId);
@@ -80,23 +165,9 @@ namespace MinecraftApi.Integrations.Services
 
 
             var roleLevel = (RoleLevel)Enum.Parse(typeof(RoleLevel), role);
-            var roleId = await pluginContext.Roles.Where(r => r.Level == roleLevel).Select(r => r.Id).FirstAsync();
+            var roleToAward = await pluginContext.Roles.Where(r => r.Level == roleLevel).FirstAsync();
 
-            var response = await commandExecutionService.ExecuteAsync($"lp user {linkedPlayer.Player!.Id} parent add {roleLevel}");
-            if (response.IsSuccess)
-            {
-                var linkedPlayerRole = new LinkedPlayerRole
-                {
-                    AssignedOn = DateTime.UtcNow,
-                    CheckRoleBy = DateTime.UtcNow.AddDays(15),
-                    LinkedPlayerId = linkedPlayerId,
-                    RoleId = roleId
-                };
-                pluginContext.LinkedPlayerRoles.Add(linkedPlayerRole);
-                await pluginContext.SaveChangesAsync();
-                return;
-            }
-            throw new InvalidOperationException(response.Body);
+            return await AwardRoleAsync(userId, linkedPlayer, roleToAward);
         }
     }
 

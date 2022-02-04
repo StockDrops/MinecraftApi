@@ -46,6 +46,7 @@
         <div>
             <RadzenIcon Icon="done" IconStyle="@IconStyle.Success" />
             <h4>Successful linking.</h4>
+            @Message
         </div>
     }
     else if(!IsLinking) //if linking finished already.
@@ -146,29 +147,10 @@
             StateHasChanged();
             if (!string.IsNullOrEmpty(Code) && !string.IsNullOrEmpty(State))
             {
-                var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-                var user = authState.User;
-                if (user != null && user.Identity != null && user.Identity.IsAuthenticated)
-                {
-                    var objectIdClaim = user.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/identity/claims/objectidentifier");
-                    if (!string.IsNullOrEmpty(State))
-                        RequestId = State;
-
-                    if (objectIdClaim != default && !string.IsNullOrEmpty(RequestId))
-                    {
-                        try
-                        {
-                            Success = await PatreonService.VerifyCodeAsync(Code, RequestId, objectIdClaim.Value);
-                        }
-                        catch (LinkRequestNotFound ex)
-                        {
-                            Message = ex.Message;
-                            Success = false;
-                        }
-                        ShowNotification(Success ? NotificationSeverity.Success : NotificationSeverity.Error, Message);
-                    }
-                    //PatreonService.VerifyCodeAsync(Code, az)
-                }
+                var userId = await GetUserIdAsync();
+                (Success, Message) = await PlayerLinkingService.LinkPatreonAccountAsync(State, userId, Code);
+                ShowNotification(Success ? NotificationSeverity.Success : NotificationSeverity.Error, Message);
+                
             }
             IsLinking = false;
             StateHasChanged();

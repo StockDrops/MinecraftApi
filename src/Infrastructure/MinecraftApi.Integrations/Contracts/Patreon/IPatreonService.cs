@@ -21,7 +21,14 @@ public interface IPatreonService
     /// <param name="code"></param>
     /// <param name="token"></param>
     /// <returns></returns>
-    Task<bool> VerifyCodeAsync(string code, string uniqueRequestId, string azureId, CancellationToken token = default);
+    Task<LinkedPlayer> VerifyCodeAsync(string code, string uniqueRequestId, string azureId, CancellationToken token = default);
+    /// <summary>
+    /// Get the tiers associated with a linked player id (the linked player id must have been linked with patreon).
+    /// </summary>
+    /// <param name="linkedPlayerId"></param>
+    /// <param name="token"></param>
+    /// <returns></returns>
+    Task<Role?> GetTiersAsync(long linkedPlayerId, CancellationToken token = default);
     /// <summary>
     /// Links a minecraft player to an external id.
     /// </summary>
