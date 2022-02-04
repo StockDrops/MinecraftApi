@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MinecraftApi.Core.Models;
 using MinecraftApi.Ef.Models;
+using MinecraftApi.Integrations.Models;
 
 namespace MinecraftApi.Api.Extensions
 {
@@ -50,10 +51,22 @@ namespace MinecraftApi.Api.Extensions
                     var db = services.GetRequiredService<T>();
                     if (db != null)
                     {
-                        var plugin = new Plugin(new MinecraftApi.Plugins.Vanilla.MinecraftMainPlugin()); //Plugin defines a constructor that takes IPlugin. We create all the plugins here.
+                        var plugins = new List<Plugin>();
+
+                        plugins.Add(new Plugin(new MinecraftApi.Plugins.Vanilla.MinecraftMainPlugin())); //Plugin defines a constructor that takes IPlugin. We create all the plugins here.
+                        plugins.Add(RoleCommands.LuckyPermsPlugin);
+                        foreach(var plugin in plugins)
+                        {
+                            var originalPlugin = db.Plugins!.FirstOrDefault(x=> x.Name == plugin.Name);
+                            if(originalPlugin == null)
+                            {
+                                db.Plugins?.Add(plugin);
+                            }
+                        }
                         //in the future I want to use DI. Define something like IDefinedPlugin, or IReadOnlyPlugin, and then register all the IReadonlyplugins and get the IEnumenrable in here.
-                        db.Plugins?.Add(plugin);
                         db.SaveChanges();
+                        
+                        
                     }
                         
                 }

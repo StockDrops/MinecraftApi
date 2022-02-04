@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace MinecraftApi.Plugins.Vanilla.Commands
 {
-    public class KillCommand : Command, ICommandEntity<Argument>
+    public class KillCommand : Command, ICommandEntity<SavedArgument>
     {
         public KillCommand()
         {
@@ -18,7 +18,7 @@ namespace MinecraftApi.Plugins.Vanilla.Commands
             Name = "Kill";
             Description = "Kills a given player.";
             Prefix = "kill";
-            Arguments = new List<Argument>()
+            Arguments = new List<SavedArgument>()
         {
             PluginArguments.Username
         };

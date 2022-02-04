@@ -26,7 +26,7 @@ namespace MinecraftApi.Ef.Services
         /// <param name="command">The command to save</param>
         /// <param name="pluginId">The id of the plugin</param>
         /// <returns></returns>
-        public Task SaveAsync(ICommandEntity<Argument> command, long pluginId)
+        public Task SaveAsync(ICommandEntity<SavedArgument> command, long pluginId)
         {
             var c = new Command(command);
             c.PluginId = pluginId;

@@ -32,7 +32,7 @@ namespace MinecraftApi.Ef.Services
         /// <returns></returns>
         public Task SaveAsync(IArgumentEntity argument, long commandId)
         {
-            var c = new Argument(argument);
+            var c = new SavedArgument(argument);
             c.CommandId = commandId;
             _pluginContext.Arguments?.Add(c);
             return _pluginContext.SaveChangesAsync();
@@ -43,7 +43,7 @@ namespace MinecraftApi.Ef.Services
         /// <param name="id"></param>
         /// <param name="cancellationToken"></param>
         /// <returns>Null if there's no command by that id.</returns>
-        public async Task<Argument?> RetrieveCommandAsync(long id, CancellationToken cancellationToken)
+        public async Task<SavedArgument?> RetrieveCommandAsync(long id, CancellationToken cancellationToken)
         {
             if (_pluginContext.Arguments == null)
                 return null;

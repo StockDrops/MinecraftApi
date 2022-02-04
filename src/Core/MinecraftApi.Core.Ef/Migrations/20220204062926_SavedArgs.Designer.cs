@@ -3,17 +3,19 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MinecraftApi.Ef.Models.Contexts;
 
 #nullable disable
-
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 namespace MinecraftApi.Ef.Migrations
 {
     [DbContext(typeof(SqlContext))]
-    partial class SqlContextModelSnapshot : ModelSnapshot
+    [Migration("20220204062926_SavedArgs")]
+    partial class SavedArgs
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -61,10 +63,6 @@ namespace MinecraftApi.Ef.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
 
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("RanTime")
                         .HasColumnType("datetime2");
 
@@ -78,8 +76,6 @@ namespace MinecraftApi.Ef.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("BaseRanCommands");
-
-                    b.HasDiscriminator<string>("Discriminator").HasValue("BaseRanCommand");
                 });
 
             modelBuilder.Entity("MinecraftApi.Core.Models.Commands.RanArgument", b =>
@@ -90,9 +86,6 @@ namespace MinecraftApi.Ef.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
 
-                    b.Property<long?>("RanCommandId")
-                        .HasColumnType("bigint");
-
                     b.Property<long>("SavedArgumentId")
                         .HasColumnType("bigint");
 
@@ -101,8 +94,6 @@ namespace MinecraftApi.Ef.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("RanCommandId");
 
                     b.HasIndex("SavedArgumentId");
 
@@ -322,18 +313,6 @@ namespace MinecraftApi.Ef.Migrations
                     b.ToTable("Arguments");
                 });
 
-            modelBuilder.Entity("MinecraftApi.Core.Models.Commands.RanCommand", b =>
-                {
-                    b.HasBaseType("MinecraftApi.Core.Models.Commands.BaseRanCommand");
-
-                    b.Property<long>("CommandId")
-                        .HasColumnType("bigint");
-
-                    b.HasIndex("CommandId");
-
-                    b.HasDiscriminator().HasValue("RanCommand");
-                });
-
             modelBuilder.Entity("MinecraftApi.Core.Models.Command", b =>
                 {
                     b.HasOne("MinecraftApi.Core.Models.Plugin", "Plugin")
@@ -347,10 +326,6 @@ namespace MinecraftApi.Ef.Migrations
 
             modelBuilder.Entity("MinecraftApi.Core.Models.Commands.RanArgument", b =>
                 {
-                    b.HasOne("MinecraftApi.Core.Models.Commands.RanCommand", null)
-                        .WithMany("RanArguments")
-                        .HasForeignKey("RanCommandId");
-
                     b.HasOne("MinecraftApi.Core.Models.SavedArgument", "SavedArgument")
                         .WithMany()
                         .HasForeignKey("SavedArgumentId")
@@ -421,17 +396,6 @@ namespace MinecraftApi.Ef.Migrations
                     b.Navigation("Command");
                 });
 
-            modelBuilder.Entity("MinecraftApi.Core.Models.Commands.RanCommand", b =>
-                {
-                    b.HasOne("MinecraftApi.Core.Models.Command", "Command")
-                        .WithMany()
-                        .HasForeignKey("CommandId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Command");
-                });
-
             modelBuilder.Entity("MinecraftApi.Core.Models.Command", b =>
                 {
                     b.Navigation("Arguments");
@@ -441,12 +405,8 @@ namespace MinecraftApi.Ef.Migrations
                 {
                     b.Navigation("Commands");
                 });
-
-            modelBuilder.Entity("MinecraftApi.Core.Models.Commands.RanCommand", b =>
-                {
-                    b.Navigation("RanArguments");
-                });
 #pragma warning restore 612, 618
         }
     }
 }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member

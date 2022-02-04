@@ -23,19 +23,20 @@ using Microsoft.OpenApi.Models;
 using System.Reflection;
 using MinecraftApi.Core.Models.Configuration;
 using OpenStockApi.Core.Models.Configuration;
+using MinecraftApi.Core.Models.Commands;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"),
+                .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAdB2C"),
                                             jwtBearerScheme: JwtBearerDefaults.AuthenticationScheme);
 builder.Services.AddAuthorization(options => options.FallbackPolicy = new AuthorizationPolicyBuilder()
                 .RequireAuthenticatedUser()
                 .Build());
 // load the database options
 var opts = builder.Configuration.GetSection(nameof(DatabaseConfigurationOptions)).Get<DatabaseConfigurationOptions>();
-var azureConfiguration = builder.Configuration.GetSection("AzureAdSwagger").Get<AzureConfiguration>();
+var azureConfiguration = builder.Configuration.GetSection("AzureAdSwagger").Get<AzureB2CConfiguration>();
 // replace the password with the real password stored in secrets
 opts.ConnectionString = opts.ConnectionString.Replace("[DB_PW]", builder.Configuration["DB_PW"]);
 
@@ -89,6 +90,9 @@ builder.Services.AddScoped<IRepositoryService<LinkedPlayer>, CrudService<PluginC
 builder.Services.AddScoped<IRepositoryService<Command>, CrudService<PluginContext, Command>>();
 builder.Services.AddScoped<IRepositoryService<Plugin>, CrudService<PluginContext, Plugin>>();
 
+builder.Services.AddScoped<IRepositoryService<BaseRanCommand>, CrudService<PluginContext, BaseRanCommand>>();
+builder.Services.AddScoped<IRepositoryService<RanCommand>, CrudService<PluginContext, RanCommand>>();
+
 builder.Services.Configure<PatreonServiceOptions>(builder.Configuration.GetSection(nameof(PatreonServiceOptions)));
 builder.Services.AddScoped<IPatreonService, PatreonService>();
 
@@ -138,8 +142,8 @@ builder.Services.AddSwaggerGen(c =>
             Implicit = new OpenApiOAuthFlow()
             {
 
-                AuthorizationUrl = new Uri($"{azureConfiguration.Instance}{azureConfiguration.TenantId}/oauth2/v2.0/authorize"),
-                TokenUrl = new Uri($"{azureConfiguration.Instance}{azureConfiguration.TenantId}/oauth2/v2.0/token"),
+                AuthorizationUrl = new Uri($"{azureConfiguration.Instance}{azureConfiguration.Domain}/{azureConfiguration.SignUpSignInPolicyId}/oauth2/v2.0/authorize"),
+                TokenUrl = new Uri($"{azureConfiguration.Instance}{azureConfiguration.Domain}/{azureConfiguration.SignUpSignInPolicyId}/oauth2/v2.0/token"),
                 Scopes = new Dictionary<string, string>
                     {
                         {

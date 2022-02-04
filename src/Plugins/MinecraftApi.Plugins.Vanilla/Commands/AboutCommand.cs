@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace MinecraftApi.Plugins.Vanilla.Commands
 {
-    public class AboutCommand : Command, ICommandEntity<Argument>
+    public class AboutCommand : Command, ICommandEntity<SavedArgument>
     {
         public AboutCommand()
         {
@@ -17,7 +17,7 @@ namespace MinecraftApi.Plugins.Vanilla.Commands
             Name = "About";
             Description = "Returns information about the server";
             Prefix = "about";
-            Arguments = new List<Argument>()
+            Arguments = new List<SavedArgument>()
                 {
                     PluginArguments.PluginName
                 };

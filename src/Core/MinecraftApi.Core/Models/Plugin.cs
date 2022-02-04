@@ -13,7 +13,7 @@ namespace MinecraftApi.Core.Models
     /// Plugin base class.
     /// </summary>
     /// 
-    public class Plugin : IPlugin<Command, Argument>, IEntity 
+    public class Plugin : IPlugin<Command, SavedArgument>, IEntity 
     {
         /// <inheritdoc/>
         public long Id { get; set; }
@@ -31,7 +31,7 @@ namespace MinecraftApi.Core.Models
         /// Creates a plugin from an IPlugin. Id is set to 0.
         /// </summary>
         /// <param name="plugin"></param>
-        public Plugin(IPlugin<Command, Argument> plugin)
+        public Plugin(IPlugin<Command, SavedArgument> plugin)
         {
             Name = plugin.Name;
             Id = 0;

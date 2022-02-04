@@ -48,7 +48,7 @@ namespace MinecraftApi.Core.Services.Patreon
         /// <summary>
         /// Endpoint to use for verifying Oauth2 codes. By default we use "www.patreon.com/api/oauth2/token".
         /// </summary>
-        public string CodeAuthorizationEndpoint { get; set; } = "www.patreon.com/api/oauth2/token";
+        public string CodeAuthorizationEndpoint { get; set; } = "https://www.patreon.com/api/oauth2/token";
         /// <summary>
         /// Url where to send the user to login with an external provider. Patreon should only be used as a "connect to" not a "login with". The request url should preserve the state query parameter.
         /// </summary>

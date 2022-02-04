@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using MinecraftApi.Core.Models;
+using MinecraftApi.Core.Models.Commands;
 using MinecraftApi.Core.Models.Integrations;
 using MinecraftApi.Core.Models.Minecraft.Players;
 using System;
@@ -42,15 +43,27 @@ namespace MinecraftApi.Ef.Models
         /// <summary>
         /// Plugins for the EF Core base.
         /// </summary>
-        public DbSet<Plugin>? Plugins { get; set; }
+        public DbSet<Plugin> Plugins => Set<Plugin>();
         /// <summary>
         /// Commands db set.
         /// </summary>
-        public DbSet<Command>? Commands { get; set; }
+        public DbSet<Command> Commands => Set<Command>();
         /// <summary>
         /// Arguments to store in the database
         /// </summary>
-        public DbSet<Argument>? Arguments { get; set; }
+        public DbSet<SavedArgument> Arguments => Set<SavedArgument>();
+        /// <summary>
+        /// Set of arguments used in previous command execution.
+        /// </summary>
+        public DbSet<RanArgument> RanArguments => Set<RanArgument>();
+        /// <summary>
+        /// Raw commands, only strings.
+        /// </summary>
+        public DbSet<BaseRanCommand> BaseRanCommands => Set<BaseRanCommand>();
+        /// <summary>
+        /// Full commands ran
+        /// </summary>
+        public DbSet<RanCommand> RanCommands => Set<RanCommand>();
         /// <summary>
         /// Players set
         /// </summary>
@@ -67,6 +80,14 @@ namespace MinecraftApi.Ef.Models
         /// The linked players (MC + External Id).
         /// </summary>
         public DbSet<LinkedPlayer> LinkedPlayers => Set<LinkedPlayer>();
+        /// <summary>
+        /// Set of roles to awards to players.
+        /// </summary>
+        public DbSet<Role> Roles => Set<Role>();
+        /// <summary>
+        /// Set of linked players with roles.
+        /// </summary>
+        public DbSet<LinkedPlayerRole> LinkedPlayerRoles => Set<LinkedPlayerRole>();
 
 
         /// <inheritdoc/>
@@ -76,6 +97,10 @@ namespace MinecraftApi.Ef.Models
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<Plugin>()
                 .HasIndex(p => p.Name)
+                .IsUnique();
+
+            modelBuilder.Entity<Command>()
+                .HasIndex(p => p.Prefix)
                 .IsUnique();
             modelBuilder.Entity<MinecraftPlayer>()
                 .HasKey(p => p.Id);

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace MinecraftApi.Plugins.Vanilla.Commands
 {
-    public class GameModeCommand : Command, ICommandEntity<Argument>
+    public class GameModeCommand : Command, ICommandEntity<SavedArgument>
     {
         public GameModeCommand()
         {
@@ -17,7 +17,7 @@ namespace MinecraftApi.Plugins.Vanilla.Commands
             Name = "Game Mode";
             Description = "Sets a given player gamemode";
             Prefix = "gamemode";
-            Arguments = new List<Argument>()
+            Arguments = new List<SavedArgument>()
             {
                 PluginArguments.GameMode
             };

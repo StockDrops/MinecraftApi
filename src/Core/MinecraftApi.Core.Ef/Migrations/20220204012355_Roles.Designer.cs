@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MinecraftApi.Ef.Models.Contexts;
 
@@ -11,9 +12,11 @@ using MinecraftApi.Ef.Models.Contexts;
 namespace MinecraftApi.Ef.Migrations
 {
     [DbContext(typeof(SqlContext))]
-    partial class SqlContextModelSnapshot : ModelSnapshot
+    [Migration("20220204012355_Roles")]
+    partial class Roles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc/>
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,6 +24,37 @@ namespace MinecraftApi.Ef.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+
+            modelBuilder.Entity("MinecraftApi.Core.Models.Argument", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
+
+                    b.Property<long>("CommandId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Required")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CommandId");
+
+                    b.ToTable("Arguments");
+                });
 
             modelBuilder.Entity("MinecraftApi.Core.Models.Command", b =>
                 {
@@ -41,72 +75,13 @@ namespace MinecraftApi.Ef.Migrations
 
                     b.Property<string>("Prefix")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("PluginId");
 
-                    b.HasIndex("Prefix")
-                        .IsUnique();
-
                     b.ToTable("Commands");
-                });
-
-            modelBuilder.Entity("MinecraftApi.Core.Models.Commands.BaseRanCommand", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
-
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("RanTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("RawCommand")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("BaseRanCommands");
-
-                    b.HasDiscriminator<string>("Discriminator").HasValue("BaseRanCommand");
-                });
-
-            modelBuilder.Entity("MinecraftApi.Core.Models.Commands.RanArgument", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
-
-                    b.Property<long?>("RanCommandId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("SavedArgumentId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("Value")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RanCommandId");
-
-                    b.HasIndex("SavedArgumentId");
-
-                    b.ToTable("RanArguments");
                 });
 
             modelBuilder.Entity("MinecraftApi.Core.Models.Integrations.Token", b =>
@@ -146,35 +121,6 @@ namespace MinecraftApi.Ef.Migrations
                     b.HasIndex("LinkedPlayerId");
 
                     b.ToTable("Tokens");
-                });
-
-            modelBuilder.Entity("MinecraftApi.Core.Models.LinkedPlayerRole", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
-
-                    b.Property<DateTime>("AssignedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("CheckRoleBy")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long>("LinkedPlayerId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("RoleId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("LinkedPlayerId");
-
-                    b.HasIndex("RoleId");
-
-                    b.ToTable("LinkedPlayerRoles");
                 });
 
             modelBuilder.Entity("MinecraftApi.Core.Models.Minecraft.Players.LinkedPlayer", b =>
@@ -288,50 +234,15 @@ namespace MinecraftApi.Ef.Migrations
                     b.ToTable("Roles");
                 });
 
-            modelBuilder.Entity("MinecraftApi.Core.Models.SavedArgument", b =>
+            modelBuilder.Entity("MinecraftApi.Core.Models.Argument", b =>
                 {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
+                    b.HasOne("MinecraftApi.Core.Models.Command", "Command")
+                        .WithMany("Arguments")
+                        .HasForeignKey("CommandId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
-
-                    b.Property<long>("CommandId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("DefaultValue")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Order")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("Required")
-                        .HasColumnType("bit");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CommandId");
-
-                    b.ToTable("Arguments");
-                });
-
-            modelBuilder.Entity("MinecraftApi.Core.Models.Commands.RanCommand", b =>
-                {
-                    b.HasBaseType("MinecraftApi.Core.Models.Commands.BaseRanCommand");
-
-                    b.Property<long>("CommandId")
-                        .HasColumnType("bigint");
-
-                    b.HasIndex("CommandId");
-
-                    b.HasDiscriminator().HasValue("RanCommand");
+                    b.Navigation("Command");
                 });
 
             modelBuilder.Entity("MinecraftApi.Core.Models.Command", b =>
@@ -345,21 +256,6 @@ namespace MinecraftApi.Ef.Migrations
                     b.Navigation("Plugin");
                 });
 
-            modelBuilder.Entity("MinecraftApi.Core.Models.Commands.RanArgument", b =>
-                {
-                    b.HasOne("MinecraftApi.Core.Models.Commands.RanCommand", null)
-                        .WithMany("RanArguments")
-                        .HasForeignKey("RanCommandId");
-
-                    b.HasOne("MinecraftApi.Core.Models.SavedArgument", "SavedArgument")
-                        .WithMany()
-                        .HasForeignKey("SavedArgumentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("SavedArgument");
-                });
-
             modelBuilder.Entity("MinecraftApi.Core.Models.Integrations.Token", b =>
                 {
                     b.HasOne("MinecraftApi.Core.Models.Minecraft.Players.LinkedPlayer", "LinkedPlayer")
@@ -369,25 +265,6 @@ namespace MinecraftApi.Ef.Migrations
                         .IsRequired();
 
                     b.Navigation("LinkedPlayer");
-                });
-
-            modelBuilder.Entity("MinecraftApi.Core.Models.LinkedPlayerRole", b =>
-                {
-                    b.HasOne("MinecraftApi.Core.Models.Minecraft.Players.LinkedPlayer", "LinkedPlayer")
-                        .WithMany()
-                        .HasForeignKey("LinkedPlayerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MinecraftApi.Core.Models.Role", "Role")
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("LinkedPlayer");
-
-                    b.Navigation("Role");
                 });
 
             modelBuilder.Entity("MinecraftApi.Core.Models.Minecraft.Players.LinkedPlayer", b =>
@@ -410,28 +287,6 @@ namespace MinecraftApi.Ef.Migrations
                     b.Navigation("Player");
                 });
 
-            modelBuilder.Entity("MinecraftApi.Core.Models.SavedArgument", b =>
-                {
-                    b.HasOne("MinecraftApi.Core.Models.Command", "Command")
-                        .WithMany("Arguments")
-                        .HasForeignKey("CommandId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Command");
-                });
-
-            modelBuilder.Entity("MinecraftApi.Core.Models.Commands.RanCommand", b =>
-                {
-                    b.HasOne("MinecraftApi.Core.Models.Command", "Command")
-                        .WithMany()
-                        .HasForeignKey("CommandId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Command");
-                });
-
             modelBuilder.Entity("MinecraftApi.Core.Models.Command", b =>
                 {
                     b.Navigation("Arguments");
@@ -440,11 +295,6 @@ namespace MinecraftApi.Ef.Migrations
             modelBuilder.Entity("MinecraftApi.Core.Models.Plugin", b =>
                 {
                     b.Navigation("Commands");
-                });
-
-            modelBuilder.Entity("MinecraftApi.Core.Models.Commands.RanCommand", b =>
-                {
-                    b.Navigation("RanArguments");
                 });
 #pragma warning restore 612, 618
         }

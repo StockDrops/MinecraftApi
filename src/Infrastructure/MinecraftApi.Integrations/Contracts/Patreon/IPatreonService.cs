@@ -21,7 +21,7 @@ public interface IPatreonService
     /// <param name="code"></param>
     /// <param name="token"></param>
     /// <returns></returns>
-    Task<bool> VerifyCodeAsync(string code, string azureId, string uniqueRequestId, CancellationToken token = default);
+    Task<bool> VerifyCodeAsync(string code, string uniqueRequestId, string azureId, CancellationToken token = default);
     /// <summary>
     /// Links a minecraft player to an external id.
     /// </summary>

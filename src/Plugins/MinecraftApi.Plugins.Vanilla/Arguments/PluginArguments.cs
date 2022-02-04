@@ -9,8 +9,8 @@ namespace MinecraftApi.Plugins.Vanilla.Arguments
 {
     public static class PluginArguments
     {
-        public static Argument PluginName = new Argument { Name = "Plugin Name", Description = "Provide the name of the plugin you want information about.", Order = 0, Required = false };
-        public static Argument Username = new Argument { Name = "Username", Description = "Provide a username.", Order = 0, Required = true };
-        public static Argument GameMode = new Argument { Name = "Game Mode", Description = "Provide a game mode.", Order = 0, Required = true };
+        public static SavedArgument PluginName = new SavedArgument { Name = "Plugin Name", Description = "Provide the name of the plugin you want information about.", Order = 0, Required = false };
+        public static SavedArgument Username = new SavedArgument { Name = "Username", Description = "Provide a username.", Order = 0, Required = true };
+        public static SavedArgument GameMode = new SavedArgument { Name = "Game Mode", Description = "Provide a game mode.", Order = 0, Required = true };
     }
 }

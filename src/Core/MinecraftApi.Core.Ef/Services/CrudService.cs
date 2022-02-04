@@ -32,53 +32,53 @@ namespace MinecraftApi.Ef.Services
             _dbContextFactory = dbContextFactory;
         }
         ///<inheritdoc/>
-        public virtual async Task<TEntity?> GetAsync(TId id)
+        public virtual async Task<TEntity?> GetAsync(TId id, CancellationToken token = default)
         {
             using var context = await _dbContextFactory.CreateDbContextAsync();
-            return await GetAsync(id, context).ConfigureAwait(false);
+            return await GetAsync(id, context, token).ConfigureAwait(false);
         }
         /// <summary>
         /// Gets an item using a context
         /// </summary>
         /// <returns></returns>
-        protected virtual async Task<TEntity?> GetAsync(TId id, TContext context)
+        protected virtual async Task<TEntity?> GetAsync(TId id, TContext context, CancellationToken token = default)
         {
             if (id != null && !id.Equals(default(TId)))
-                return await context.Set<TEntity>().Where(x => x.Id != null && x.Id.Equals(id)).FirstOrDefaultAsync().ConfigureAwait(false);
+                return await context.Set<TEntity>().Where(x => x.Id != null && x.Id.Equals(id)).FirstOrDefaultAsync(token).ConfigureAwait(false);
             throw new ArgumentNullException(nameof(id));
         }
         ///<inheritdoc/>
-        public virtual async Task<List<TEntity>> GetAllAsync()
+        public virtual async Task<List<TEntity>> GetAllAsync(CancellationToken token = default)
         {
             using var context = await _dbContextFactory.CreateDbContextAsync();
-            return await context.Set<TEntity>().ToListAsync().ConfigureAwait(false);
+            return await context.Set<TEntity>().ToListAsync(token).ConfigureAwait(false);
         }
         ///<inheritdoc/>
-        public virtual async Task<TEntity> CreateAsync(TEntity entity)
+        public virtual async Task<TEntity> CreateAsync(TEntity entity, CancellationToken token = default)
         {
             using var context = await _dbContextFactory.CreateDbContextAsync();
             context.Set<TEntity>().Add(entity);
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(token);
             return entity;
         }
         ///<inheritdoc/>
-        public virtual async Task DeleteAsync(TId id)
+        public virtual async Task DeleteAsync(TId id, CancellationToken token = default)
         {
             using var context = await _dbContextFactory.CreateDbContextAsync();
-            var originalEntity = await GetAsync(id, context);
+            var originalEntity = await GetAsync(id, context, token);
             if (originalEntity != null)
             {
                 context.Set<TEntity>().Remove(originalEntity);
-                await context.SaveChangesAsync().ConfigureAwait(false);
+                await context.SaveChangesAsync(token).ConfigureAwait(false);
             }
         }
         ///<inheritdoc/>
-        public virtual async Task UpdateAsync(TEntity entity)
+        public virtual async Task UpdateAsync(TEntity entity, CancellationToken token = default)
         {
             using var context = await _dbContextFactory.CreateDbContextAsync();
             if (entity.Id != null && !entity.Id.Equals(default(TId)))
             {
-                var originalEntity = await GetAsync(entity.Id, context);
+                var originalEntity = await GetAsync(entity.Id, context, token);
                 if (originalEntity != null)
                 {
                     context.Entry(originalEntity).CurrentValues.SetValues(entity);
@@ -89,14 +89,14 @@ namespace MinecraftApi.Ef.Services
             }
         }
         ///<inheritdoc/>
-        public virtual async Task<TEntity> CreateOrUpdateAsync(TEntity entity)
+        public virtual async Task<TEntity> CreateOrUpdateAsync(TEntity entity, CancellationToken token = default)
         {
             //using var context = await _dbContextFactory.CreateDbContextAsync();
             if (entity.Id != null && !entity.Id.Equals(default(TId)))
             {
                 try
                 {
-                    await UpdateAsync(entity);
+                    await UpdateAsync(entity, token);
                     return entity;
                 }
                 catch (ArgumentOutOfRangeException) { }//the item doesn't exist so it must be created so carry on.

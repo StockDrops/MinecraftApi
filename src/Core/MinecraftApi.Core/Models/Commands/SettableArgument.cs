@@ -9,7 +9,7 @@ namespace MinecraftApi.Core.Models
 {
     /// Argument with Value property so it can be set to a given value.
     ///<inheritdoc/>
-    public class SettableArgument : Argument, ISettableArgumentEntity
+    public class SettableArgument : SavedArgument, ISettableArgumentEntity
     {
         /// <summary>
         /// Constructs a settable argument.
@@ -38,7 +38,7 @@ namespace MinecraftApi.Core.Models
         /// Copy constructed.
         /// </summary>
         /// <param name="argument"></param>
-        public SettableArgument(Argument argument)
+        public SettableArgument(SavedArgument argument)
         {
             Value = "";
             Name = argument.Name;

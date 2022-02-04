@@ -1,9 +1,19 @@
 ﻿@page "/link/patreon"
+@using MinecraftApi.Core.Models
+@using MinecraftApi.Integrations.Models.Legacy
+@using MinecraftApi.Integrations.Patreon
 @using MinecraftBlazingHub.Services.Integrations
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Components.Authorization
 
-@inject IPatreonService PatreonService
+@inject IBlazorPatreonService PatreonService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NotificationService NotificationService
+@inject LegacyApiService LegacyApiService
+
 @using Radzen.Blazor
-<h3>Link</h3>
+<h3>Link your accounts</h3>
+<RadzenNotification />
 @if (string.IsNullOrEmpty(Code))
 {
     @if (string.IsNullOrEmpty(RequestId))
@@ -11,22 +21,45 @@
         //the request id is null so let's show some instructions
 
     }
-    else
+    else if(!IsLinking && !LinkRequested)
     {
-        <div>
-            <div>
-                <RadzenButton Text="Connect With Patreon" Click=@(args => OnClick(SupportedIntegrations.Patreon))/>
-            </div>
-            <div>
-                <RadzenButton Text="Connect to Legacy Subscriptions (my.stockdrops.net)" Click=@(args => OnClick(SupportedIntegrations.Legacy)) />
-            </div>
-        </div>
+        
+        <RadzenCard>
+            <RadzenButton Text="Connect With Patreon" Click=@(async args => await OnClickAsync(SupportedIntegrations.Patreon)) />
+        </RadzenCard>
+        <RadzenCard>
+            <RadzenButton Text="Connect to Legacy Subscriptions (my.stockdrops.net)" Click=@(async args => await OnClickAsync(SupportedIntegrations.Legacy)) />
+        </RadzenCard>
     }
 }
-else //the code is not null and we should call the api to verify.
+@if(LinkRequested || !string.IsNullOrEmpty(Code))
 {
-    
+    <RadzenCard>
+    @if (IsLinking)
+    {
+        <h4 class="mb-4">Linking Accounts</h4>
+    }
+    @if (!IsLinking && Success)
+    {
+        <div>
+            <RadzenIcon Icon="done" IconStyle="@IconStyle.Success" />
+            <h4>Successful linking.</h4>
+        </div>
+    }
+    else if(!IsLinking) //if linking finished already.
+    {
+        <div>
+            <h4>Error linking.</h4>
+            <RadzenIcon Icon="error" IconStyle="@IconStyle.Danger" />
+            @Message
+        </div>
+    }
+
+    <RadzenProgressBar Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" Visible=@IsLinking />
+    </RadzenCard>
 }
+
+
 
 
 @code {
@@ -40,18 +73,123 @@ else //the code is not null and we should call the api to verify.
     {
         Console.WriteLine($"Value changed to {value}");
     }
-    void OnClick(SupportedIntegrations integration)
+    async Task OnClickAsync(SupportedIntegrations integration)
     {
-        if(integration == SupportedIntegrations.Patreon)
+        if (integration == SupportedIntegrations.Patreon && !string.IsNullOrEmpty(RequestId))
         {
             PatreonService.RedirectUserToOauth2(RequestId);
         }
+        if(integration == SupportedIntegrations.Legacy && !string.IsNullOrEmpty(RequestId))
+        {
+            LinkRequested = true;
+            IsLinking = true;
+            Success = false;
+
+            StateHasChanged();
+
+            await LinkLegacyAccountAsync(RequestId);
+            ShowNotification(Success ? NotificationSeverity.Success : NotificationSeverity.Error);
+            IsLinking = false;
+            StateHasChanged();
+        }
 
     }
-    protected override async Task OnParametersSetAsync()
+    private async Task LinkLegacyAccountAsync(string requestId)
     {
-        await base.OnParametersSetAsync();
-        PatreonService.
+        var userId = await GetUserIdAsync();
+        try
+        {
+            var player = await PatreonService.LinkPlayerAsync(requestId, userId);
+            if(player != null && player.ExternalId != null)
+            {
+                var subscription = await LegacyApiService.GetSubscription(player.ExternalId);
+                if(subscription != null && subscription.Name != null)
+                {
+                    var level = Enum.Parse(typeof(RoleLevel), subscription.Name);
+
+                }
+                
+                Success = true;
+            }
+        }
+        catch (LinkRequestNotFound)
+        {
+            Message = "The linking request has either expired, doesn't exist, or has already being used. Please create a new one on the Minecraft server.";
+            Success = false;
+        }
+    }
+
+    private async Task<string> GetUserIdAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        if (user != null && user.Identity != null && user.Identity.IsAuthenticated)
+        {
+            var objectIdClaim = user.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/identity/claims/objectidentifier");
+            if (objectIdClaim != default)
+                return objectIdClaim.Value;
+        }
+        throw new InvalidOperationException("User is not logged in!");
+    }
+    private void ShowNotification(NotificationSeverity severity, string summary = "")
+    {
+        switch (severity)
+        {
+            case(NotificationSeverity.Success):
+                NotificationService.Notify(new NotificationMessage
+                                    {
+                                        Detail = "Success!",
+                                        Summary = "Linking completed succesfully!",
+                                        Severity = NotificationSeverity.Success
+                                    });
+                break;
+            case(NotificationSeverity.Error):
+                NotificationService.Notify(new NotificationMessage
+                                    {
+                                        Detail = "Error...",
+                                        Summary = "Linking couldn't complete!",
+                                        Severity = NotificationSeverity.Error
+                                    });
+                break;
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+        if (firstRender)
+        {
+            IsLinking = true;
+            StateHasChanged();
+            if (!string.IsNullOrEmpty(Code) && !string.IsNullOrEmpty(State))
+            {
+                var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+                var user = authState.User;
+                if (user != null && user.Identity != null && user.Identity.IsAuthenticated)
+                {
+                    var objectIdClaim = user.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/identity/claims/objectidentifier");
+                    if (!string.IsNullOrEmpty(State))
+                        RequestId = State;
+
+                    if (objectIdClaim != default && !string.IsNullOrEmpty(RequestId))
+                    {
+                        try
+                        {
+                            Success = await PatreonService.VerifyCodeAsync(Code, RequestId, objectIdClaim.Value);
+                        }
+                        catch (LinkRequestNotFound ex)
+                        {
+                            Message = ex.Message;
+                            Success = false;
+                        }
+                        ShowNotification(Success ? NotificationSeverity.Success : NotificationSeverity.Error, Message);
+                    }
+                    //PatreonService.VerifyCodeAsync(Code, az)
+                }
+            }
+            IsLinking = false;
+            StateHasChanged();
+        }
     }
 
     [Parameter]
@@ -59,8 +197,13 @@ else //the code is not null and we should call the api to verify.
     public string? Code { get; set; }
     [Parameter]
     [SupplyParameterFromQuery]
-    public string RequestId { get; set; }
+    public string? RequestId { get; set; }
     [Parameter]
     [SupplyParameterFromQuery]
     public string? State { get; set; }
+
+    private bool LinkRequested { get; set; } = false;
+    private bool IsLinking { get; set; } = false;
+    private string Message { get; set; } = "";
+    private bool Success { get; set; }
 }

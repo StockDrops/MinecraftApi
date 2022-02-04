@@ -1,7 +1,13 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using MinecraftApi.Core.Contracts.Services;
+using MinecraftApi.Core.Models;
+using MinecraftApi.Core.Models.Minecraft.Players;
 using MinecraftApi.Core.Services.Patreon;
+using MinecraftApi.Ef.Models;
+using MinecraftApi.Integrations.Patreon;
 using System.Text;
 
 namespace MinecraftBlazingHub.Services.Integrations
@@ -9,19 +15,34 @@ namespace MinecraftBlazingHub.Services.Integrations
     /// <summary>
     /// 
     /// </summary>
-    public class PatreonService : IPatreonService
+    public class BlazorPatreonService : PatreonService, IBlazorPatreonService
     {
         private readonly PatreonServiceOptions options;
         private readonly NavigationManager navigationManager;
-        private readonly HttpClient client;
-        public PatreonService(IOptions<PatreonServiceOptions> patreonServiceOptions,
-            HttpClient client,
-            NavigationManager  navigationManager)
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="options"></param>
+        /// <param name="client"></param>
+        /// <param name="linkedPlayerRepositoryService"></param>
+        /// <param name="minecraftPlayerRepositoryService"></param>
+        /// <param name="dbContextFactory"></param>
+        /// <param name="logger"></param>
+        public BlazorPatreonService(IOptions<PatreonServiceOptions> options, 
+            HttpClient client, 
+            IRepositoryService<LinkedPlayer> linkedPlayerRepositoryService, 
+            IRepositoryService<MinecraftPlayer, string> minecraftPlayerRepositoryService, 
+            IDbContextFactory<PluginContext> dbContextFactory,
+            ILogger<PatreonService> logger,
+            NavigationManager navigationManager
+            ) 
+            : base(options, client, linkedPlayerRepositoryService, minecraftPlayerRepositoryService, dbContextFactory, logger)
         {
-            options = patreonServiceOptions.Value;
-            this.client = client;
             this.navigationManager = navigationManager;
+            this.options = options.Value;
         }
+
         public string GetOauth2Url(string requestId)
         {
             var builder = PatreonOauthUrlBuilder.CreateBuilder();
@@ -36,15 +57,6 @@ namespace MinecraftBlazingHub.Services.Integrations
             var url = GetOauth2Url(requestId);
             navigationManager.NavigateTo(url);
         }
-        public async Task VerifyCode(string code, string azureId, string requestId)
-        {
-            var endpoint = options.RequestUrl;
-            var query = QueryString.Create("requestId", requestId).Add("externalId", azureId).Add("code", code);
-            
-            var request = new HttpRequestMessage(HttpMethod.Post, $"{endpoint}{query}");
-            var response = await client.SendAsync(request);
-
-        } 
     }
     public class PatreonOauthUrlBuilder
     {

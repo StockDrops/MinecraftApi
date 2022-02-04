@@ -29,7 +29,7 @@ namespace MinecraftApi.Ef.Services
         /// </summary>
         /// <param name="plugin"></param>
         /// <returns></returns>
-        public Task SaveAsync(IPlugin<Command, Argument> plugin)
+        public Task SaveAsync(IPlugin<Command, SavedArgument> plugin)
         {
            _pluginContext.Plugins?.Add(new Plugin(plugin)) ;
             return _pluginContext.SaveChangesAsync();

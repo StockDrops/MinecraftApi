@@ -38,7 +38,7 @@ namespace MinecraftApi.Core.Models
         /// Copy constructor
         /// </summary>
         /// <param name="commandEntity"></param>
-        public Command(ICommandEntity<Argument> commandEntity)
+        public Command(ICommandEntity<SavedArgument> commandEntity)
         {
             if(commandEntity.Arguments != null)
             {
@@ -124,7 +124,7 @@ namespace MinecraftApi.Core.Models
     /// <summary>
     /// Command class for EF core.
     /// </summary>
-    public class Command : Command<Argument>,  ICommandEntity<Argument>
+    public class Command : Command<SavedArgument>,  ICommandEntity<SavedArgument>
     {
         /// <summary>
         /// 
@@ -134,12 +134,12 @@ namespace MinecraftApi.Core.Models
         /// 
         /// </summary>
         /// <param name="command"></param>
-        public Command(ICommandEntity<Argument> command)
+        public Command(ICommandEntity<SavedArgument> command)
         {
             Name = command.Name;
             Description = command.Description;
             Prefix = command.Prefix;
-            Arguments = command.Arguments?.Select(x => new Argument(x)).ToList();
+            Arguments = command.Arguments?.Select(x => new SavedArgument(x)).ToList();
         }
     }
 }

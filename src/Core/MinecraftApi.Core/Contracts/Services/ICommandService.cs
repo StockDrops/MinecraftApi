@@ -20,7 +20,7 @@ public interface ICommandService
     /// <param name="command"></param>
     /// <param name="pluginId"></param>
     /// <returns></returns>
-    Task SaveAsync(ICommandEntity<Argument> command, long pluginId);
+    Task SaveAsync(ICommandEntity<SavedArgument> command, long pluginId);
     /// <summary>
     /// Search a command by a name.
     /// </summary>
