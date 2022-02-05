@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Microsoft.Identity.Client;
 using MinecraftApi.Core.Contracts.Services;
 using MinecraftApi.Core.Models;
 using MinecraftApi.Core.Models.Minecraft.Players;
@@ -21,15 +23,18 @@ namespace MinecraftApi.Integrations.Services
         private readonly IPatreonService patreonService;
         private readonly IDbContextFactory<PluginContext> pluginContextFactory;
         private readonly LegacyApiService legacyApiService;
+        private readonly ILogger<PlayerLinkingService> logger;
         public PlayerLinkingService(ICommandExecutionService commandExecutionService,
             IPatreonService patreonService,
             LegacyApiService legacyApiService,
-            IDbContextFactory<PluginContext> pluginContextFactory)
+            IDbContextFactory<PluginContext> pluginContextFactory,
+            ILogger<PlayerLinkingService> logger)
         {
             this.commandExecutionService = commandExecutionService;
             this.pluginContextFactory = pluginContextFactory;
             this.patreonService = patreonService;
             this.legacyApiService = legacyApiService;
+            this.logger = logger;
         }
 
         /// <summary>
@@ -73,9 +78,20 @@ namespace MinecraftApi.Integrations.Services
                 }
                 message = "Couldn't find role to award";
             }
-            catch (LinkRequestNotFound ex)
+            catch (HttpRequestException ex)
+            {
+                logger.LogError(ex, "");
+                message = "A network error has ocurred. Make sure you are not reusing an old request id.";
+                success = false;
+            }
+            catch(ArgumentException ex)
             {
                 message = ex.Message;
+                success = false;
+            }
+            catch (LinkRequestNotFound)
+            {
+                message = "The link request has either expired, doesn't exist, or has already being used. Please create a new one on the Minecraft server.";
                 success = false;
             }
                         
@@ -111,13 +127,29 @@ namespace MinecraftApi.Integrations.Services
                                 message = $"{subscription.Name} was awarded succesfully to {mcplayer.PlayerName}";
                             return (success, message);
                         }
+                        if(subscription.Name == "Free")
+                        {
+                            message = "Free subscriptions cannot be linked since they don't offer any perks on Minecraft.";
+                            success = false;
+                            return (success, message);
+                        }
                     }
                     success = true;
                 }
             }
+            catch (MsalUiRequiredException)
+            {
+                message = "Please log out and log in again to continue, thank you!";
+                success = false;
+            }
+            catch(ArgumentException ex)
+            {
+                message = ex.Message;
+                success = false;
+            }
             catch (LinkRequestNotFound)
             {
-                message = "The linking request has either expired, doesn't exist, or has already being used. Please create a new one on the Minecraft server.";
+                message = "The link request has either expired, doesn't exist, or has already being used. Please create a new one on the Minecraft server.";
                 success = false;
             }
             return (success, message);
@@ -163,11 +195,19 @@ namespace MinecraftApi.Integrations.Services
             if (linkedPlayer.ExternalId != userId)
                 throw new InvalidOperationException("Cannot link a user id with a different player.");
 
+            try
+            {
+                var roleLevel = (RoleLevel)Enum.Parse(typeof(RoleLevel), role);
+                var roleToAward = await pluginContext.Roles.Where(r => r.Level == roleLevel).FirstAsync();
+                return await AwardRoleAsync(userId, linkedPlayer, roleToAward);
+            }
+            catch (ArgumentException)
+            {
+                return false;
+            }
+            
 
-            var roleLevel = (RoleLevel)Enum.Parse(typeof(RoleLevel), role);
-            var roleToAward = await pluginContext.Roles.Where(r => r.Level == roleLevel).FirstAsync();
-
-            return await AwardRoleAsync(userId, linkedPlayer, roleToAward);
+            
         }
     }
 

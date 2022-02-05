@@ -15,12 +15,13 @@ namespace MinecraftApi.Integrations.Extensions.Patreon
     {
         public static Token ToToken(this CodeResponse codeResponse, long linkedPlayerId)
         {
+            var time = DateTime.UtcNow;
             return new Token
             {
                 AccessToken = codeResponse.AccessToken,
                 RefreshToken = codeResponse.RefreshToken,
-                AccessTokenGenerationDate = DateTime.UtcNow,
-                ExpirationDate = DateTime.UtcNow.AddSeconds(codeResponse.ExpiresIn - 1),
+                AccessTokenGenerationDate = time,
+                ExpirationDate = time.AddSeconds(codeResponse.ExpiresIn - 1),
                 IntegrationType = IntegrationType.Patreon,
                 TokenType = TokenType.User,
                 LinkedPlayerId = linkedPlayerId,

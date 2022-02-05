@@ -104,7 +104,12 @@ namespace MinecraftApi.Ef.Models
                 .IsUnique();
             modelBuilder.Entity<MinecraftPlayer>()
                 .HasKey(p => p.Id);
-
+            modelBuilder.Entity<LinkedPlayer>()
+                .HasIndex(p => p.PlayerId)
+                .IsUnique();
+            modelBuilder.Entity<Token>()
+                .HasIndex(p => p.LinkedPlayerId)
+                .IsUnique();
         }
     }
 }

@@ -123,6 +123,15 @@ public class PatreonService : IPatreonService
         var createdLinkedPlayer = await LinkPlayerAsync(uniqueRequestId, azureId, false, token);
 
         var dbToken = codeResponse.ToToken(createdLinkedPlayer.Id);
+
+        var existingTokens = await context.Tokens.Where(t => t.LinkedPlayerId == dbToken.LinkedPlayerId).ToListAsync();
+
+        //remove existing tokens
+        if (existingTokens.Any())
+        {
+            context.Tokens.RemoveRange(existingTokens);
+        }
+
         context.Tokens.Add(dbToken);
         //set the request as completed
         request.Status = LinkRequestStatus.Completed;
@@ -134,7 +143,7 @@ public class PatreonService : IPatreonService
     public async Task<Role?> GetTiersAsync(long linkedPlayerId, CancellationToken token = default)
     {
         using var context = dbContextFactory.CreateDbContext();
-        var accessToken = await context.Tokens.Where(t => t.LinkedPlayerId == linkedPlayerId).Include(t => t.LinkedPlayer).FirstOrDefaultAsync(token);
+        var accessToken = await context.Tokens.Where(t => t.LinkedPlayerId == linkedPlayerId).OrderBy(t => t.ExpirationDate).Include(t => t.LinkedPlayer).FirstOrDefaultAsync(token);
         if(accessToken == null)
             throw new ArgumentOutOfRangeException(nameof(accessToken));
         var httpRequest = new HttpRequestMessage(HttpMethod.Get, "https://www.patreon.com/api/oauth2/v2/identity?include=memberships,memberships.currently_entitled_tiers&fields%5Bmember%5D=patron_status&fields%5Btier%5D=url,title");
@@ -156,10 +165,21 @@ public class PatreonService : IPatreonService
                     //gets the role associated with the tier id found in the relationships.
                     var roleToAward = group.Where(g => g.Relationships.CurrentlyEntitledTiers.Data.Select(d => d.Id).Where(id => roles.Select(r => r.TierId).Contains(int.Parse(id))).Any())
                         .Select(g => roles.Where( r => g.Relationships.CurrentlyEntitledTiers.Data.Select(d => d.Id).Contains(r.TierId.ToString())).FirstOrDefault()).FirstOrDefault();
+                    if (roleToAward == null)
+                        logger.LogWarning("No role was found.");
                     return roleToAward;
                 }
             }
         }
+        try
+        {
+            response.EnsureSuccessStatusCode();
+        }
+        catch(HttpRequestException ex)
+        {
+            logger.LogError(ex, "");
+        }
+        
         return null;
 
     }
@@ -186,20 +206,31 @@ public class PatreonService : IPatreonService
         if(request.ExpirationTime < DateTime.UtcNow)
             throw new LinkRequestNotFound();
 #endif
-        //TODO: what if the linked player already exists?
-        var linkedPlayer = new LinkedPlayer
+        var existingLink = await context.LinkedPlayers.Where(l => l.PlayerId == request.PlayerId).FirstOrDefaultAsync();
+
+        if (existingLink != null && existingLink.ExternalId != externalId)
         {
-            ExternalId = externalId,
-            PlayerId = request.PlayerId
-        };
-        var createdLinkedPlayer = await linkedPlayerRepositoryService.CreateAsync(linkedPlayer);
+            throw new ArgumentException("The player is already linked to another account.");
+        }
+        if(existingLink == null)
+        {
+            
+            var linkedPlayer = new LinkedPlayer
+            {
+                ExternalId = externalId,
+                PlayerId = request.PlayerId
+            };
+            existingLink = await linkedPlayerRepositoryService.CreateAsync(linkedPlayer);
+            await context.SaveChangesAsync();
+        }    
+        
 
         //set the request as completed
         if(setRequestAsCompleted)
             request.Status = LinkRequestStatus.Completed;
-
-        await context.SaveChangesAsync();
-        return createdLinkedPlayer;
+        return existingLink;
+        
+        
     }
     /// <summary>
     /// 

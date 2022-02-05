@@ -1,4 +1,6 @@
 ﻿@page "/link/patreon"
+@page "/"
+
 @using MinecraftApi.Core.Models
 @using MinecraftApi.Integrations.Models.Legacy
 @using MinecraftApi.Integrations.Patreon
@@ -6,7 +8,9 @@
 @using MinecraftBlazingHub.Services.Integrations
 @using System.Security.Claims
 @using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.Identity.Web
 
+@inject MicrosoftIdentityConsentAndConditionalAccessHandler ConsentHandler
 @inject IBlazorPatreonService PatreonService
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NotificationService NotificationService
@@ -14,14 +18,23 @@
 @inject PlayerLinkingService PlayerLinkingService 
 
 @using Radzen.Blazor
-<h3>Link your accounts</h3>
+<PageTitle>Link your accounts</PageTitle>
 <RadzenNotification />
 @if (string.IsNullOrEmpty(Code))
 {
     @if (string.IsNullOrEmpty(RequestId))
     {
         //the request id is null so let's show some instructions
-
+        <RadzenCard>
+            <h4>How to link my accounts?</h4>
+            <p>
+                To link your Minecraft player account to a Patreon or Legacy subscription (my.stockdrops.net) please run the command "link" on our Minecraft server first: <a href="play.stockdrops.net">play.stockdrops.net</a>
+                </p>
+                <p>
+                You will be given a unique url where you can link your accounts.
+                Thank you!
+            </p>
+        </RadzenCard>
     }
     else if(!IsLinking && !LinkRequested)
     {
@@ -100,7 +113,15 @@
     private async Task LinkLegacyAccountAsync(string requestId)
     {
         var userId = await GetUserIdAsync();
-        (Success, Message) = await PlayerLinkingService.LinkLegacyAccountAsync(requestId, userId);
+        try
+        {
+            (Success, Message) = await PlayerLinkingService.LinkLegacyAccountAsync(requestId, userId);
+        }
+        catch(Exception ex)
+        {
+            ConsentHandler.HandleException(ex);
+        }
+
     }
 
     private async Task<string> GetUserIdAsync()

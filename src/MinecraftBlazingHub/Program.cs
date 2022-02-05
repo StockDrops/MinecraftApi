@@ -23,6 +23,7 @@ using MinecraftApi.Integrations.Models.Legacy;
 using MinecraftApi.Integrations.Services;
 using MinecraftApi.Rcon.Services;
 using MinecraftBlazingHub.Data;
+using MinecraftBlazingHub.Extensions;
 using MinecraftBlazingHub.Services.Integrations;
 using Radzen;
 using System.Security.Cryptography.X509Certificates;
@@ -30,13 +31,32 @@ using System.Security.Cryptography.X509Certificates;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+builder.Services.AddLogging(loggingBuilder => {
+    loggingBuilder.AddConfiguration(builder.Configuration);
+    loggingBuilder.AddFile("app_hub.log", options => {
+        options.Append = true;
+        options.FileSizeLimitBytes = 500000;
+    });
+});
+
+
 builder.Services.Configure<PatreonServiceOptions>(builder.Configuration.GetSection(nameof(PatreonServiceOptions)));
 builder.Services.AddTransient<IBlazorPatreonService, BlazorPatreonService>();
 builder.Services.AddTransient<IPatreonService>(services => services.GetRequiredService<IBlazorPatreonService>());
 
 builder.Services.AddTransient<PlayerLinkingService>();
 
-var certificate = new X509Certificate2(builder.Configuration["CertificatePath"], builder.Configuration["CertificatePassword"]);
+X509Certificate2 certificate;
+try
+{
+    certificate = new X509Certificate2(builder.Configuration["CertificatePath"], builder.Configuration["CertificatePassword"]);
+}
+catch (Exception)
+{
+    certificate = X509CertificateExtensions.FindCertificateByThumbprint(builder.Configuration["CertificateThumbprint"]) ?? throw new ArgumentException("Couldn't find certificate");
+}
+
 
 builder.Services.AddHttpClient<LegacyApiService>(client =>
 {
@@ -44,6 +64,8 @@ builder.Services.AddHttpClient<LegacyApiService>(client =>
     client.DefaultRequestHeaders.UserAgent.TryParseAdd(builder.Configuration["UserAgent"]);
 })
     .AddClientCertificate(certificate);
+
+
 
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAdB2C"))
@@ -134,5 +156,8 @@ app.UseAuthorization();
 app.MapControllers();
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
+
+if(app.Configuration["MigrateDb"] == "true")
+    app.MigrateDatabase<PluginContext>();
 
 app.Run();
