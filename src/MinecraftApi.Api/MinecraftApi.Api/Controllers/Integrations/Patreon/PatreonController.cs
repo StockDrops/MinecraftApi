@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Web.Resource;
 using MinecraftApi.Core.Models;
 using MinecraftApi.Core.Models.Minecraft.Players;
 using MinecraftApi.Integrations.Contracts.Patreon;
@@ -12,6 +13,7 @@ namespace MinecraftApi.Api.Controllers.Integrations.Patreon
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class PatreonController : ControllerBase
     {
         private readonly IPatreonService patreonService;
@@ -28,9 +30,9 @@ namespace MinecraftApi.Api.Controllers.Integrations.Patreon
         /// <returns></returns>
         /// 
         [HttpPost("link")]
-        [Authorize]
         public async Task<ActionResult<LinkRequest>> CreateLinkRequestMinecraft([FromBody] MinecraftPlayer player, CancellationToken token = default)
         {
+            HttpContext.ValidateAppRole("MinecraftAppRole");
             try
             {
                 var request = await patreonService.CreateLinkRequestAsync(player, token);

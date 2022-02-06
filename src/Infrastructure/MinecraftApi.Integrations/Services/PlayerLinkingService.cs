@@ -162,7 +162,7 @@ namespace MinecraftApi.Integrations.Services
                 throw new InvalidOperationException("You can only award a role to the same player/user id as yours");
 
             var command = new CommandBuilder()
-                .SetPrefix("lp users")
+                .SetPrefix("lp user")
                 .AddArgument(player.PlayerId)
                 .AddArgument("parent")
                 .AddArgument("add")

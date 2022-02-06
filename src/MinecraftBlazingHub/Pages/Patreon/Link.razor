@@ -50,7 +50,7 @@
 @if(LinkRequested || !string.IsNullOrEmpty(Code))
 {
     <RadzenCard>
-    @if (IsLinking)
+    @if (!FinishedLinking)
     {
         <h4 class="mb-4">Linking Accounts</h4>
     }
@@ -62,7 +62,7 @@
             @Message
         </div>
     }
-    else if(!IsLinking) //if linking finished already.
+    else if(!IsLinking && FinishedLinking) //if linking finished already.
     {
         <div>
             <h4>Error linking.</h4>
@@ -71,7 +71,7 @@
         </div>
     }
 
-    <RadzenProgressBar Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" Visible=@IsLinking />
+    <RadzenProgressBar Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" Visible=@(IsLinking) />
     </RadzenCard>
 }
 
@@ -98,6 +98,7 @@
         if(integration == SupportedIntegrations.Legacy && !string.IsNullOrEmpty(RequestId))
         {
             LinkRequested = true;
+            FinishedLinking = false;
             IsLinking = true;
             Success = false;
 
@@ -105,6 +106,7 @@
 
             await LinkLegacyAccountAsync(RequestId);
             ShowNotification(Success ? NotificationSeverity.Success : NotificationSeverity.Error);
+            FinishedLinking = true;
             IsLinking = false;
             StateHasChanged();
         }
@@ -171,8 +173,9 @@
                 var userId = await GetUserIdAsync();
                 (Success, Message) = await PlayerLinkingService.LinkPatreonAccountAsync(State, userId, Code);
                 ShowNotification(Success ? NotificationSeverity.Success : NotificationSeverity.Error, Message);
-                
+
             }
+            FinishedLinking = true;
             IsLinking = false;
             StateHasChanged();
         }
@@ -190,6 +193,8 @@
 
     private bool LinkRequested { get; set; } = false;
     private bool IsLinking { get; set; } = false;
+    private bool FinishedLinking = false;
+
     private string Message { get; set; } = "";
     private bool Success { get; set; }
 }

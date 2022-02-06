@@ -296,7 +296,7 @@ public class PatreonService : IPatreonService
             RequestedTime = DateTime.UtcNow,
             Status = LinkRequestStatus.Pending
         };
-        linkRequest.Oauth2RequestUrl = $"{options.RedirectUrl.TrimEnd('/').TrimEnd('\\')}?state={HttpUtility.UrlEncode(linkRequest.UniqueId)}";
+        linkRequest.Oauth2RequestUrl = $"{options.RedirectUrl.TrimEnd('/').TrimEnd('\\')}?requestId={HttpUtility.UrlEncode(linkRequest.UniqueId)}";
         context.LinkRequests.Add(linkRequest);
         await context.SaveChangesAsync();
         return linkRequest;

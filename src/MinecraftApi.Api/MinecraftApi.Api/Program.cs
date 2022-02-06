@@ -29,7 +29,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAdB2C"),
+                .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"),
                                             jwtBearerScheme: JwtBearerDefaults.AuthenticationScheme);
 builder.Services.AddAuthorization(options => options.FallbackPolicy = new AuthorizationPolicyBuilder()
                 .RequireAuthenticatedUser()
@@ -87,8 +87,10 @@ builder.Services.AddScoped<ICommandExecutionService, CommandExecutionService>();
 
 builder.Services.AddScoped<IRepositoryService<MinecraftPlayer, string>, CrudService<PluginContext, MinecraftPlayer, string>>();
 builder.Services.AddScoped<IRepositoryService<LinkedPlayer>, CrudService<PluginContext, LinkedPlayer>>();
+builder.Services.AddScoped<IRepositoryService<LinkedPlayerRole>, CrudService<PluginContext, LinkedPlayerRole>>();
 builder.Services.AddScoped<IRepositoryService<Command>, CrudService<PluginContext, Command>>();
 builder.Services.AddScoped<IRepositoryService<Plugin>, CrudService<PluginContext, Plugin>>();
+builder.Services.AddScoped<IRepositoryService<Role>, CrudService<PluginContext, Role>>();
 
 builder.Services.AddScoped<IRepositoryService<BaseRanCommand>, CrudService<PluginContext, BaseRanCommand>>();
 builder.Services.AddScoped<IRepositoryService<RanCommand>, CrudService<PluginContext, RanCommand>>();
@@ -142,8 +144,8 @@ builder.Services.AddSwaggerGen(c =>
             Implicit = new OpenApiOAuthFlow()
             {
 
-                AuthorizationUrl = new Uri($"{azureConfiguration.Instance}{azureConfiguration.Domain}/{azureConfiguration.SignUpSignInPolicyId}/oauth2/v2.0/authorize"),
-                TokenUrl = new Uri($"{azureConfiguration.Instance}{azureConfiguration.Domain}/{azureConfiguration.SignUpSignInPolicyId}/oauth2/v2.0/token"),
+                AuthorizationUrl = new Uri($"{azureConfiguration.Instance}/{azureConfiguration.TenantId}/oauth2/v2.0/authorize"),
+                TokenUrl = new Uri($"{azureConfiguration.Instance}/{azureConfiguration.TenantId}/oauth2/v2.0/token"),
                 Scopes = new Dictionary<string, string>
                     {
                         {
